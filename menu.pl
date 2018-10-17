@@ -1,25 +1,16 @@
 firstMenu :-
-	printFirstMenu,
-	mainMenu.
+	printFirstMenu.
 
 printFirstMenu :-
 	write('______________________________________________'), nl,
 	write('                                              '), nl,
-	write('               >>\.	                         '), nl,
-	write('              /_  )`.                         '), nl,
-	write('             /  _)`^)`.   _.---. _            '), nl,
-	write('    		   (_,´ \  `^-)""      `.\           '), nl,
-	write('                  |              | \          '), nl,
-	write('                  \              / |          '), nl,
-	write('                 / \  /.___.´\  (\ (_         '), nl,
-	write('                < ,"||     \ |`. \`-´         '), nl,
-	write('                 \\ ()      )|  )/            '), nl,
-	write('                 |_>|>     /_] //             '), nl,
-	write('                   /_]        /_]             '), nl,
+	write('                  KNIGHT LINE                 '), nl,
 	write('                                              '), nl,
-	write('          João Nuno Rodrigues Ferreira        '), nl,
-	write('      João Miguel Vaz Tello da Gama Amaral    '), nl,
-	write('______________________________________________'), nl,
+	write('                                              '), nl,
+	write('                                              '), nl,
+	write('          Joao Nuno Rodrigues Ferreira        '), nl,
+	write('      Joao Miguel Vaz Tello da Gama Amaral    '), nl,
+	write('______________________________________________'), nl, nl,
 	mainMenu.
 
 mainMenu :-
@@ -27,22 +18,26 @@ mainMenu :-
 	write('2. Player vs Computer'), nl,
 	write('3. Computer vs Computer'), nl,
 	write('0. Exit'), nl, nl,
-	write('Please, insert your option: '),
-	read(input),
-	handleInput(input).
+	write('Please insert a valid option: '),
+	read(Input),
+	handleInput(Input).
 
 handleInput(0) :-
-	write('exit').
+	write('Exiting').
 
 handleInput(1) :-
-	write('player vs player').
+	write('player vs player'), nl,
+	mainMenu.
 
 handleInput(2) :-
-	write('player vs pc').
+	write('player vs pc'), nl,
+	mainMenu.
 
 handleInput(3) :-
-	write('pc vs pc').		
+	write('pc vs pc'), nl,
+	mainMenu.	
 
-handleInput(invalidInput) :-
-	write('Invalid input'),
-	mainMenu. 
+handleInput(InvalidInput) :-
+	write('Invalid input.'), nl,
+	write('______________________________________________'), nl, nl,
+	mainMenu.
