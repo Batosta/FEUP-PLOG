@@ -18,10 +18,9 @@ printMatrixInd(X) :-
 	write('---|---|---|---|---|---|---|\n'),
 	printGameBoard(X, 1).
 
-printGameBoard([], 12).
-
+printGameBoard([], 1).
 printGameBoard([Head|Tail], N) :-
-	write(' '),
+	write('  '),
 	N1 is N + 1,
 	write(' | '),
 	printLine(Head),
@@ -29,7 +28,6 @@ printGameBoard([Head|Tail], N) :-
 	printGameBoard(Tail, N1).
 
 printLine([]).
-
 printLine([Head|Tail]) :-
 	symbol(Head, S),
 	write(S),
