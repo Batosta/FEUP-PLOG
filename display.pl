@@ -26,9 +26,8 @@ finalBoard([
 
 
 % Symbols meaning
-symbol(empty, S) :- S='e'.
-symbol(white, S) :- S='w'.
-symbol(black, S) :- S='b'.
+symbol(white, S) :- S='O'.
+symbol(black, S) :- S='X'.
 letter(1, S) :- S='A'.
 letter(2, S) :- S='B'.
 letter(3, S) :- S='C'.
@@ -59,7 +58,9 @@ letter(26, S) :- S='Z'.
 
 % Prints any board
 display_game([H|T], Player) :-
-	arrayLength(H, Columns),
+
+	arrayLength(H, Columns), arrayLength(T, Rows), R1 is Rows + 1,
+
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
 	write('|'), separation(Columns), write('|'),
@@ -88,7 +89,8 @@ printLine([H|T]) :-
 
 % empty
 % Prints a pair
-printPair([]).
+printPair([empty|_]) :-
+	write('    | ').
 printPair([H|T]) :-
 	symbol(H, S),
 	write(S),
@@ -96,9 +98,10 @@ printPair([H|T]) :-
 
 % 0
 % Prints the number in a pair
-printNumber([]).
+printNumber([], X).
 printNumber([H|T]) :-
-	write(','), write(H), write(' | ').
+	(H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
+
 
 % Top of the table
 tableTop(C, C).
