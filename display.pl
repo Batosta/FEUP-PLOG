@@ -38,16 +38,23 @@ letter(26, S) :- S='Z'.
 
 play :-
 	initialBoard(X),
-	addRowStart(X, 4, R, Z),
-	addRowEnd(Z, 4, R1, Z1),
-	display_game(Z1, 1, L).
+	addColumnEnd(X, [H1|T1]),
+	addRowEnd([H1|T1], 4, R1, [H2|T2]),
+	arrayLength(H2, Col),
+	addRowStart([H2|T2], Col, R2, [H3|T3]),
+	addColumnStart([H3|T3], [H4|T4]),
+	addColumnEnd([H4|T4], [H5|T5]),
+	addColumnStart([H5|T5], [H6|T6]),
+	addColumnEnd([H6|T6], [H7|T7]),
+	arrayLength(H7, Col1),
+	addRowStart([H7|T7], Col1, R3, P),
+	display_game(P, 1, L).
 
 % Prints any board
 display_game([H|T], Player, R) :-
 
 	arrayLength(H, Columns), arrayLength(T, Rows), R1 is Rows + 1,
 
-	addRowStart([H|T], Columns, R),
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
 	write('|'), separation(Columns), write('|'),
@@ -132,4 +139,15 @@ createEmptyRow(P, Col, R):-
 
 % Adds a full column to the end.
 
+addColumnEnd([], []).
+addColumnEnd([H|T], [H1|T1]):-
+	append(H, [[empty,0]], H1),
+	addColumnEnd(T, T1).
+
+
 % Adds a full column to the beginning.
+
+addColumnStart([], []).
+addColumnStart([H|T], [H1|T1]):-
+	append([[empty,0]], H, H1),
+	addColumnStart(T, T1).
