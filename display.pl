@@ -5,26 +5,6 @@ initialBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
-% Mid game Board
-midBoard([
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [white, 4], [black, 1], [white, 4], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [white, 2], [black, 6], [black, 3], [white, 4], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 2], [black, 5], [white, 5], [black, 3], [white, 1], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]]
-]).
-
-% Final game board
-finalBoard([
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 1], [white, 3], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [white, 2], [black, 4], [white, 6], [white, 2], [black, 5], [empty, 0]],
-[[empty, 0], [empty, 0], [white, 1], [black, 2], [black, 3], [white, 1], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [white, 5], [black, 2], [black, 3], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]]
-]).
-
-
 % Symbols meaning
 symbol(white, S) :- S='O'.
 symbol(black, S) :- S='X'.
@@ -57,10 +37,12 @@ letter(26, S) :- S='Z'.
 
 
 % Prints any board
-display_game([H|T], Player) :-
+display_game([H|T], Player, R) :-
 
 	arrayLength(H, Columns), arrayLength(T, Rows), R1 is Rows + 1,
 
+	addRowStart([H|T], Columns, R),
+	write([H|T]), nl, nl,
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
 	write('|'), separation(Columns), write('|'),
@@ -123,3 +105,15 @@ arrayLength([], 0).
 arrayLength([H|T], LenResult) :-
 	arrayLength(T, L),
 	LenResult is L + 1.
+
+
+% Adds a full row in the beggining
+addRowStart(P, Col, R) :-
+	createEmptyRow(P, Col, R).
+
+% Appends Col x [empty, 0]
+createEmptyRow(P, 0, P).
+createEmptyRow(P, Col, R):-
+	Col1 is Col - 1,
+	append(P, [[empty, 0]], Z),
+	createEmptyRow(Z, Col1, R).
