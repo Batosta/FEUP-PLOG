@@ -36,13 +36,18 @@ letter(25, S) :- S='Y'.
 letter(26, S) :- S='Z'.
 
 
+play :-
+	initialBoard(X),
+	addRowStart(X, 4, R, Z),
+	addRowEnd(Z, 4, R1, Z1),
+	display_game(Z1, 1, L).
+
 % Prints any board
 display_game([H|T], Player, R) :-
 
 	arrayLength(H, Columns), arrayLength(T, Rows), R1 is Rows + 1,
 
 	addRowStart([H|T], Columns, R),
-	write([H|T]), nl, nl,
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
 	write('|'), separation(Columns), write('|'),
@@ -106,10 +111,17 @@ arrayLength([H|T], LenResult) :-
 	arrayLength(T, L),
 	LenResult is L + 1.
 
+%Ex: initialBoard(X), addRowEnd(X, 4, R, Z), display_game(Z, 1, L).
 
-% Adds a full row in the beggining
-addRowStart(P, Col, R) :-
-	createEmptyRow(P, Col, R).
+% Adds a full row in the end
+addRowEnd(P, Col, R, Z) :-
+	createEmptyRow([], Col, R),
+	append(P, [R], Z).
+
+% Adds a full row in the start
+addRowStart(P, Col, R, Z) :-
+	createEmptyRow([], Col, R),
+	append([R], P, Z).
 
 % Appends Col x [empty, 0]
 createEmptyRow(P, 0, P).
@@ -117,3 +129,7 @@ createEmptyRow(P, Col, R):-
 	Col1 is Col - 1,
 	append(P, [[empty, 0]], Z),
 	createEmptyRow(Z, Col1, R).
+
+% Adds a full column to the end.
+
+% Adds a full column to the beginning.
