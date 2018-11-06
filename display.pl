@@ -38,22 +38,17 @@ letter(26, S) :- S='Z'.
 
 play :-
 	initialBoard(X),
-	addColumnEnd(X, [H1|T1]),
-	addRowEnd([H1|T1], 4, R1, [H2|T2]),
-	arrayLength(H2, Col),
-	addRowStart([H2|T2], Col, R2, [H3|T3]),
-	addColumnStart([H3|T3], [H4|T4]),
-	addColumnEnd([H4|T4], [H5|T5]),
-	addColumnStart([H5|T5], [H6|T6]),
-	addColumnEnd([H6|T6], [H7|T7]),
-	arrayLength(H7, Col1),
-	addRowStart([H7|T7], Col1, R3, P),
+	%addColumnEnd(X, [H1|T1]),
+	%addRowEnd([H1|T1], R1, [H2|T2]),
+	%addRowStart([H2|T2], R2, [H3|T3]),
+	%addColumnStart([H3|T3], [H4|T4]),
+	boardResize(X, 3, 1, P),
 	display_game(P, 1, L).
 
 % Prints any board
 display_game([H|T], Player, R) :-
 
-	arrayLength(H, Columns), arrayLength(T, Rows), R1 is Rows + 1,
+	arrayLength(H, Columns), arrayLength([H|T], Rows),
 
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
@@ -121,14 +116,16 @@ arrayLength([H|T], LenResult) :-
 %Ex: initialBoard(X), addRowEnd(X, 4, R, Z), display_game(Z, 1, L).
 
 % Adds a full row in the end
-addRowEnd(P, Col, R, Z) :-
+addRowEnd([H|T], R, Z) :-
+	arrayLength(H, Col),
 	createEmptyRow([], Col, R),
-	append(P, [R], Z).
+	append([H|T], [R], Z).
 
 % Adds a full row in the start
-addRowStart(P, Col, R, Z) :-
+addRowStart([H|T], R, Z) :-
+	arrayLength(H, Col),
 	createEmptyRow([], Col, R),
-	append([R], P, Z).
+	append([R], [H|T], Z).
 
 % Appends Col x [empty, 0]
 createEmptyRow(P, 0, P).
@@ -151,3 +148,18 @@ addColumnStart([], []).
 addColumnStart([H|T], [H1|T1]):-
 	append([[empty,0]], H, H1),
 	addColumnStart(T, T1).
+
+
+% (H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
+% Checks the board needs to be resized
+boardResize([H|T], IndC, IndR, [H4|T4]) :-
+	arrayLength(H, Columns), 
+	arrayLength([H|T], Rows),
+	Col is Columns - 1,
+	Row is Rows - 1,
+	((IndC =:= 0 ; IndR =:= 0 ; IndC =:= Col ; IndR =:= Row) -> 
+		addColumnEnd([H|T], [H1|T1]),
+		addRowEnd([H1|T1], R1, [H2|T2]),
+		addRowStart([H2|T2], R2, [H3|T3]),
+		addColumnStart([H3|T3], [H4|T4]); 
+		append([], [H|T], [H4|T4])).
