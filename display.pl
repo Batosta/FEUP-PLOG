@@ -38,7 +38,6 @@ letter(26, S) :- S='Z'.
 
 play :-
 	initialBoard(X),
-<<<<<<< Updated upstream
 	addColumnEnd(X, [H1|T1]),
 	addRowEnd([H1|T1], 4, R1, [H2|T2]),
 	arrayLength(H2, Col),
@@ -50,21 +49,12 @@ play :-
 	arrayLength(H7, Col1),
 	addRowStart([H7|T7], Col1, R3, P),
 	display_game(P, 1, L).
-=======
-	addRowStart(X, 4, R, Z),
-	addRowEnd(Z, 4, R1, Z1),
-	display_game(X, 1, L).
->>>>>>> Stashed changes
 
 % Prints any board
 display_game([H|T], Player, R) :-
 
 	arrayLength(H, Columns), arrayLength(T, Rows), R1 is Rows + 1,
 
-<<<<<<< Updated upstream
-=======
-	%addRowStart([H|T], Columns, R),
->>>>>>> Stashed changes
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
 	write('|'), separation(Columns), write('|'),
@@ -128,9 +118,8 @@ arrayLength([H|T], LenResult) :-
 	arrayLength(T, L),
 	LenResult is L + 1.
 
-
-
 %Ex: initialBoard(X), addRowEnd(X, 4, R, Z), display_game(Z, 1, L).
+
 % Adds a full row in the end
 addRowEnd(P, Col, R, Z) :-
 	createEmptyRow([], Col, R),
@@ -146,7 +135,6 @@ createEmptyRow(P, 0, P).
 createEmptyRow(P, Col, R):-
 	Col1 is Col - 1,
 	append(P, [[empty, 0]], Z),
-<<<<<<< Updated upstream
 	createEmptyRow(Z, Col1, R).
 
 % Adds a full column to the end.
@@ -163,6 +151,3 @@ addColumnStart([], []).
 addColumnStart([H|T], [H1|T1]):-
 	append([[empty,0]], H, H1),
 	addColumnStart(T, T1).
-=======
-	createEmptyRow(Z, Col1, R).
->>>>>>> Stashed changes
