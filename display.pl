@@ -38,12 +38,17 @@ letter(26, S) :- S='Z'.
 
 play :-
 	initialBoard(X),
-	%addColumnEnd(X, [H1|T1]),
-	%addRowEnd([H1|T1], R1, [H2|T2]),
-	%addRowStart([H2|T2], R2, [H3|T3]),
-	%addColumnStart([H3|T3], [H4|T4]),
-	boardResize(X, 3, 1, P),
-	display_game(P, 1, L).
+	addColumnEnd(X, [H1|T1]),
+	addRowEnd([H1|T1], R1, [H2|T2]),
+	addRowStart([H2|T2], R2, [H3|T3]),
+	addColumnStart([H3|T3], [H4|T4]),
+	addColumnEnd([H4|T4], [H5|T5]),
+	addColumnStart([H5|T5], [H6|T6]),
+	addColumnEnd([H6|T6], [H7|T7]),
+	addRowStart([H7|T7], R3, P),
+	updatePiece(P, [], 3, 3, 5, black, F),
+	movePiece(F, [], 2, 5, 5, black, Final),
+	display_game(Final, 1, L).
 
 % Prints any board
 display_game([H|T], Player, R) :-
@@ -135,22 +140,17 @@ createEmptyRow(P, Col, R):-
 	createEmptyRow(Z, Col1, R).
 
 % Adds a full column to the end.
-
 addColumnEnd([], []).
 addColumnEnd([H|T], [H1|T1]):-
 	append(H, [[empty,0]], H1),
 	addColumnEnd(T, T1).
 
-
 % Adds a full column to the beginning.
-
 addColumnStart([], []).
 addColumnStart([H|T], [H1|T1]):-
 	append([[empty,0]], H, H1),
 	addColumnStart(T, T1).
 
-
-% (H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
 % Checks the board needs to be resized
 boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	arrayLength(H, Columns), 
@@ -163,3 +163,38 @@ boardResize([H|T], IndC, IndR, [H4|T4]) :-
 		addRowStart([H2|T2], R2, [H3|T3]),
 		addColumnStart([H3|T3], [H4|T4]); 
 		append([], [H|T], [H4|T4])).
+
+
+% Updates the pieces that were played too
+updatePiece([H|T], New, 0, IndCol, Number, Player, Final):-
+	updatePieceAux(H, IndCol, Number, Z),
+	replace(H, IndCol, [Player,Z], R),
+	append([R], T, Q),
+	append(New, Q, Final).
+updatePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
+	IndRow1 is IndRow - 1,
+	append(New, [H], NewT),
+	updatePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
+
+updatePieceAux([[H1|T1]|T], 0, Number, Z):-
+	Z is T1 - Number.
+updatePieceAux([H|T], IndCol, Number, Z):-
+	IndCol1 is IndCol - 1,
+	updatePieceAux(T, IndCol1, Number, Z).
+
+
+% Updates the tile to where the piece was played
+movePiece([H|T], New, 0, IndCol, Number, Player, Final):-
+	replace(H, IndCol, [Player,Number], R),
+	append([R], T, Q),
+	append(New, Q, Final).
+movePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
+	IndRow1 is IndRow-1,
+	append(New, [H], NewT),
+	movePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
+
+replace([_|T], 0, X, [X|T]).
+replace([H|T], I, X, [H|R]) :-
+    I > 0,
+    I1 is I - 1,
+    replace(T, I1, X, R).
