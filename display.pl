@@ -47,6 +47,20 @@ play :-
 	addColumnEnd([H6|T6], [H7|T7]),
 	addRowStart([H7|T7], R3, P),
 	updatePiece(P, [], 3, 3, 5, black, F),
+	movePiece(F, [], 2, 5, 5, black, F1),
+	updatePiece(F1, [], 3, 4, 3, white, F2),
+	movePiece(F2, [], 1, 5, 3, white, F3),
+	checkEmpty(F3, 2, 5, Empty),
+	( Empty = 1 ->
+		updatePiece(F3, [], 1, 5, 2, white, F4),
+		movePiece(F4, [], 2, 5, 2, white, F5),
+		display_game(F5, 1, L)
+	;	write('Cant move to that position, not empty!'),
+		display_game(F3, 1, L)	
+	),
+	write('Play').
+	addRowStart([H7|T7], R3, P),
+	updatePiece(P, [], 3, 3, 5, black, F),
 	movePiece(F, [], 2, 5, 5, black, Final),
 	display_game(Final, 1, L).
 
@@ -150,6 +164,9 @@ addColumnStart([], []).
 addColumnStart([H|T], [H1|T1]):-
 	append([[empty,0]], H, H1),
 	addColumnStart(T, T1).
+
+
+
 
 % Checks the board needs to be resized
 boardResize([H|T], IndC, IndR, [H4|T4]) :-
