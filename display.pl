@@ -161,9 +161,6 @@ addColumnStart([H|T], [H1|T1]):-
 	append([[empty,0]], H, H1),
 	addColumnStart(T, T1).
 
-
-
-
 % Checks the board needs to be resized
 boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	arrayLength(H, Columns), 
@@ -206,14 +203,14 @@ movePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
 	append(New, [H], NewT),
 	movePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
 
+% Replaces an element in a list into another, returning the resulting board
 replace([_|T], 0, X, [X|T]).
 replace([H|T], I, X, [H|R]) :-
     I > 0,
     I1 is I - 1,
     replace(T, I1, X, R).
 
-%vê se é preta, branca ou empty
-
+% Checks the pieces color/empty
 checkPiece([H|T], 0, Col, Piece):-
 	checkPieceAux(H, Col, Piece).
 checkPiece([H|T], Row, Col, Piece):-
@@ -230,3 +227,42 @@ checkPieceAux([[H|[H1|[]]]|T], 0, Piece):-
 checkPieceAux([H|T], Col, Piece):-
 	Col1 is Col-1,
 	checkPieceAux(T, Col1, Piece).
+
+testBoard([
+[[black, 0], [black, 0], [empty, 0]],
+[[empty, 0], [black, 20], [empty, 0]],
+[[empty, 0], [empty, 0], [empty, 0]]
+]).
+
+% Checks the adjacent tiles to a tile (returning 0 means there arent adjacent pieces)
+checkAdjacents([H|T], IndR, IndC, Flag) :-
+A is IndR + 1,
+B is IndR,
+C is IndR - 1,
+D is IndC + 1,
+E is IndC,
+F is IndC - 1,
+checkPiece([H|T], C, F, P1),
+(P1 =\= 2 -> Flag is 1;
+	checkPiece([H|T], C, E, P2),
+	(P2 =\= 2 -> Flag is 1;
+		checkPiece([H|T], C, D, P3),	
+		(P3 =\= 2 -> Flag is 1;
+			checkPiece([H|T], B, D, P4),
+			(P4 =\= 2 -> Flag is 1;
+				checkPiece([H|T], A, D, P5),
+				(P5 =\= 2 -> Flag is 1;
+					checkPiece([H|T], A, E, P6),
+					(P6 =\= 2 -> Flag is 1;
+						checkPiece([H|T], A, F, P7),
+						(P7 =\= 2 -> Flag is 1;
+							checkPiece([H|T], B, F, P8),
+							(P8 =\= 2 -> Flag is 1;
+							Flag is 0)
+						)
+					)
+				)
+			)
+		)
+	)
+).
