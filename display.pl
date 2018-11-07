@@ -50,19 +50,15 @@ play :-
 	movePiece(F, [], 2, 5, 5, black, F1),
 	updatePiece(F1, [], 3, 4, 3, white, F2),
 	movePiece(F2, [], 1, 5, 3, white, F3),
-	checkEmpty(F3, 1, 4, Empty),
-	( Empty = 1 ->
+	checkPiece(F3, 0, 0, Empty),
+	( Empty = 2 ->
 		updatePiece(F3, [], 3, 3, 2, black, F4),
-		movePiece(F4, [], 1, 4, 2, black, F5),
-		display_game(F5, 1, L)
+		movePiece(F4, [], 0, 0, 2, black, F5),
+		boardResize(F5, 0, 0, F6),
+		display_game(F6, 1, L)
 	;	write('Cant move to that position, not empty!'),
 		display_game(F3, 1, L)	
-	),
-	write('Play').
-	addRowStart([H7|T7], R3, P),
-	updatePiece(P, [], 3, 3, 5, black, F),
-	movePiece(F, [], 2, 5, 5, black, Final),
-	display_game(Final, 1, L).
+	).
 
 % Prints any board
 display_game([H|T], Player, R) :-
