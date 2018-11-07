@@ -228,12 +228,6 @@ checkPieceAux([H|T], Col, Piece):-
 	Col1 is Col-1,
 	checkPieceAux(T, Col1, Piece).
 
-testBoard([
-[[black, 0], [black, 0], [empty, 0]],
-[[empty, 0], [black, 20], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0]]
-]).
-
 % Checks the adjacent tiles to a tile (returning 0 means there arent adjacent pieces)
 checkAdjacents([H|T], IndR, IndC, Flag) :-
 A is IndR + 1,
