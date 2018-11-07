@@ -50,10 +50,10 @@ play :-
 	movePiece(F, [], 2, 5, 5, black, F1),
 	updatePiece(F1, [], 3, 4, 3, white, F2),
 	movePiece(F2, [], 1, 5, 3, white, F3),
-	checkEmpty(F3, 2, 5, Empty),
+	checkEmpty(F3, 1, 4, Empty),
 	( Empty = 1 ->
-		updatePiece(F3, [], 1, 5, 2, white, F4),
-		movePiece(F4, [], 2, 5, 2, white, F5),
+		updatePiece(F3, [], 3, 3, 2, black, F4),
+		movePiece(F4, [], 1, 4, 2, black, F5),
 		display_game(F5, 1, L)
 	;	write('Cant move to that position, not empty!'),
 		display_game(F3, 1, L)	
@@ -215,3 +215,22 @@ replace([H|T], I, X, [H|R]) :-
     I > 0,
     I1 is I - 1,
     replace(T, I1, X, R).
+
+%vê se é preta, branca ou empty
+
+checkPiece([H|T], 0, Col, Piece):-
+	checkPieceAux(H, Col, Piece).
+checkPiece([H|T], Row, Col, Piece):-
+	Row1 is Row-1,
+	checkPiece(T, Row1, Col, Piece).
+
+checkPieceAux([[H|[H1|[]]]|T], 0, Piece):-
+	(
+		H = white -> Piece is 0
+	;	( H = black -> Piece is 1
+		;	Piece is 2
+		)
+	).
+checkPieceAux([H|T], Col, Piece):-
+	Col1 is Col-1,
+	checkPieceAux(T, Col1, Piece).
