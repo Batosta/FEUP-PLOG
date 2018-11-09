@@ -51,7 +51,7 @@ play :-
 	updatePiece(F1, [], 3, 4, 3, white, F2),
 	movePiece(F2, [], 1, 5, 3, white, F3),
 	checkPiece(F3, 0, 0, Empty),
-	( Empty = 2 ->
+	(Empty = 2 ->
 		updatePiece(F3, [], 3, 3, 2, black, F4),
 		movePiece(F4, [], 0, 0, 2, black, F5),
 		boardResize(F5, 0, 0, F6),
@@ -71,6 +71,7 @@ display_game([H|T], Player, R) :-
 	printBoard([H|T], Columns, 0, 1), nl, nl.
 
 
+
 % Head - [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 % Prints the pieces & its number
 % ([Head|Tail], Columns, Rows, N)
@@ -84,12 +85,16 @@ printBoard([H|T], C, R, N) :-
 	write('|'), separation(C), write('|'),
 	printBoard(T, C, R1, N1).
 
+
+
 % [empty, 0]
 % Prints a full line
 printLine([]).
 printLine([H|T]) :-
 	printPair(H),
 	printLine(T).
+
+
 
 % empty
 % Prints a pair
@@ -100,11 +105,14 @@ printPair([H|T]) :-
 	write(S),
 	printNumber(T).
 
+
+
 % 0
 % Prints the number in a pair
 printNumber([], X).
 printNumber([H|T]) :-
 	(H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
+
 
 
 % Top of the table
@@ -115,6 +123,7 @@ tableTop(C, X) :-
 	tableTop(C, X1).
 
 
+
 % Separation between 2 lines
 separation(-1).
 separation(C) :-
@@ -122,25 +131,15 @@ separation(C) :-
 	C1 is C - 1,
 	separation(C1).
 
+
+
 % Calculate an array size
 arrayLength([], 0).
 arrayLength([H|T], LenResult) :-
 	arrayLength(T, L),
 	LenResult is L + 1.
 
-%Ex: initialBoard(X), addRowEnd(X, 4, R, Z), display_game(Z, 1, L).
 
-% Adds a full row in the end
-addRowEnd([H|T], R, Z) :-
-	arrayLength(H, Col),
-	createEmptyRow([], Col, R),
-	append([H|T], [R], Z).
-
-% Adds a full row in the start
-addRowStart([H|T], R, Z) :-
-	arrayLength(H, Col),
-	createEmptyRow([], Col, R),
-	append([R], [H|T], Z).
 
 % Appends Col x [empty, 0]
 createEmptyRow(P, 0, P).
@@ -148,6 +147,8 @@ createEmptyRow(P, Col, R):-
 	Col1 is Col - 1,
 	append(P, [[empty, 0]], Z),
 	createEmptyRow(Z, Col1, R).
+
+
 
 % Adds a full column to the end.
 addColumnEnd([], []).
@@ -161,6 +162,20 @@ addColumnStart([H|T], [H1|T1]):-
 	append([[empty,0]], H, H1),
 	addColumnStart(T, T1).
 
+% Adds a full row in the end
+addRowEnd([H|T], R, Z) :-
+	arrayLength(H, Col),
+	createEmptyRow([], Col, R),
+	append([H|T], [R], Z).
+
+% Adds a full row in the start
+addRowStart([H|T], R, Z) :-
+	arrayLength(H, Col),
+	createEmptyRow([], Col, R),
+	append([R], [H|T], Z).
+
+
+
 % Checks the board needs to be resized
 boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	arrayLength(H, Columns), 
@@ -173,6 +188,7 @@ boardResize([H|T], IndC, IndR, [H4|T4]) :-
 		addRowStart([H2|T2], R2, [H3|T3]),
 		addColumnStart([H3|T3], [H4|T4]); 
 		append([], [H|T], [H4|T4])).
+
 
 
 % Updates the pieces that were played too
@@ -193,6 +209,7 @@ updatePieceAux([H|T], IndCol, Number, Z):-
 	updatePieceAux(T, IndCol1, Number, Z).
 
 
+
 % Updates the tile to where the piece was played
 movePiece([H|T], New, 0, IndCol, Number, Player, Final):-
 	replace(H, IndCol, [Player,Number], R),
@@ -203,12 +220,16 @@ movePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
 	append(New, [H], NewT),
 	movePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
 
+
+
 % Replaces an element in a list into another, returning the resulting board
 replace([_|T], 0, X, [X|T]).
 replace([H|T], I, X, [H|R]) :-
     I > 0,
     I1 is I - 1,
     replace(T, I1, X, R).
+
+
 
 % Checks the pieces color/empty
 checkPiece([H|T], 0, Col, Piece):-
@@ -228,35 +249,88 @@ checkPieceAux([H|T], Col, Piece):-
 	Col1 is Col-1,
 	checkPieceAux(T, Col1, Piece).
 
-% Checks the adjacent tiles to a tile (returning 0 means there arent adjacent pieces)
+
+
+% Checks the adjacent tiles to a tile (1: there are adjacent pieces; 0: there are not)
 checkAdjacents([H|T], IndR, IndC, Flag) :-
-A is IndR + 1,
-B is IndR,
-C is IndR - 1,
-D is IndC + 1,
-E is IndC,
-F is IndC - 1,
-checkPiece([H|T], C, F, P1),
-(P1 =\= 2 -> Flag is 1;
-	checkPiece([H|T], C, E, P2),
-	(P2 =\= 2 -> Flag is 1;
-		checkPiece([H|T], C, D, P3),	
-		(P3 =\= 2 -> Flag is 1;
-			checkPiece([H|T], B, D, P4),
-			(P4 =\= 2 -> Flag is 1;
-				checkPiece([H|T], A, D, P5),
-				(P5 =\= 2 -> Flag is 1;
-					checkPiece([H|T], A, E, P6),
-					(P6 =\= 2 -> Flag is 1;
-						checkPiece([H|T], A, F, P7),
-						(P7 =\= 2 -> Flag is 1;
-							checkPiece([H|T], B, F, P8),
-							(P8 =\= 2 -> Flag is 1;
-							Flag is 0)
+	A is IndR + 1,
+	B is IndR,
+	C is IndR - 1,
+	D is IndC + 1,
+	E is IndC,
+	F is IndC - 1,
+	checkPiece([H|T], C, F, P1),
+	(P1 =\= 2 -> Flag is 1;
+		checkPiece([H|T], C, E, P2),
+		(P2 =\= 2 -> Flag is 1;
+			checkPiece([H|T], C, D, P3),	
+			(P3 =\= 2 -> Flag is 1;
+				checkPiece([H|T], B, D, P4),
+				(P4 =\= 2 -> Flag is 1;
+					checkPiece([H|T], A, D, P5),
+					(P5 =\= 2 -> Flag is 1;
+						checkPiece([H|T], A, E, P6),
+						(P6 =\= 2 -> Flag is 1;
+							checkPiece([H|T], A, F, P7),
+							(P7 =\= 2 -> Flag is 1;
+								checkPiece([H|T], B, F, P8),
+								(P8 =\= 2 -> Flag is 1;
+								Flag is 0)
+							)
 						)
 					)
 				)
 			)
 		)
-	)
-).
+	).
+
+
+
+% Checks the play to check its L (1: it is an L move; 0: it is not)
+checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
+	A is C1 - 2,
+	B is C1 - 1,
+	C is C1 + 1,
+	D is C1 + 2,	
+	E is R1 - 2,
+	F is R1 - 1,
+	G is R1 + 1,
+	I is R1 + 2,
+	% B.E, C.E, D.F, D.G, C.I, B.I, A.G, A.F
+	checkInsideBoard([H|T], B, E, F1),
+	((C2 =:= B , R2 =:= E , F1 =:= 0) -> Flag is 1;
+		checkInsideBoard([H|T], C, E, F2),
+		((C2 =:= C , R2 =:= E , F2 =:= 0) -> Flag is 1;
+			checkInsideBoard([H|T], D, F, F3),
+			((C2 =:= D , R2 =:= F , F3 =:= 0) -> Flag is 1;
+				checkInsideBoard([H|T], D, G, F4),
+				((C2 =:= D , R2 =:= G , F4 =:= 0) -> Flag is 1;
+					checkInsideBoard([H|T], C, I, F5),
+					((C2 =:= C , R2 =:= I , F5 =:= 0) -> Flag is 1;
+						checkInsideBoard([H|T], B, I, F6),
+						((C2 =:= B , R2 =:= I , F6 =:= 0) -> Flag is 1;
+							checkInsideBoard([H|T], A, G, F7),
+							((C2 =:= A , R2 =:= G , F7 =:= 0) -> Flag is 1;
+								checkInsideBoard([H|T], A, F, F8),
+								((C2 =:= A , R2 =:= F , F8 =:= 0) -> Flag is 1;
+								Flag is 0)
+							)
+						)
+					)
+				)
+			)
+		)
+	).
+
+
+
+% Checks the cases where a piece is outside the board (1: is not inside the board; 0: is inside)
+checkInsideBoard([H|T], IndC, IndR, Flag) :-
+	arrayLength(H, Col), 
+	arrayLength([H|T], Row),
+	C is Col - 1,
+	R is Row - 1,
+	((IndC @> C ; IndR @> R) -> Flag is 1;
+		((IndC @< 0 ; IndR @< 0) -> Flag is 1;
+		Flag is 0)
+	).
