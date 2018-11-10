@@ -5,12 +5,13 @@ initialBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
+% Test board
 testBoard([
 [[empty, 0], [black, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
-[[white, 0], [empty, 0], [empty, 0], [black, 0], [black, 0]],
-[[white, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
-[[empty, 0], [black, 0], [empty, 0], [empty, 0], [black, 0]]
+[[empty, 0], [black, 0], [empty, 0], [white, 0], [black, 0]],
+[[empty, 0], [black, 0], [white, 0], [empty, 0], [empty, 0]],
+[[white, 0], [black, 0], [white, 0], [white, 0], [black, 0]],
+[[white, 0], [empty, 0], [white, 0], [white, 0], [empty, 0]]
 ]).
 
 % Symbols meaning
@@ -73,7 +74,7 @@ play :-
 play2 :-
 	initialBoard(X),
 	display_game(X),
-	mainRecursive(X, Y, 0).
+	mainRecursive(X, Y, 0, Win).
 
 
 % Prints any board
@@ -404,9 +405,13 @@ makeMoveW([H|T], C1, R1, C2, R2, NP, Z):-
 
 
 % Recursive function that takes care of all the plays
-mainRecursive([H|T], [H1|T1], Counter) :-
-	Result is Counter mod 2,
-	(Result = 0 -> write('X turn to play!'), nl
+
+
+mainRecursive([H|T], [H1|T1], Counter, 1):-
+	write('Player has won!').
+mainRecursive([H|T], [H1|T1], Counter, Win) :-
+	Player is Counter mod 2,
+	(Player = 0 -> write('X turn to play!'), nl
 	;write('O turn to play!'), nl
 	),
 	write('Insert the coordinates of the stack you wish to move:'), nl,
@@ -415,7 +420,7 @@ mainRecursive([H|T], [H1|T1], Counter) :-
 	checkStackConditions([H|T], C1, R1, F1),
 
 	checkPiece([H|T], R1, C1, Piece),
-	(((Result = 0, Piece \= 1) ; (Result = 1, Piece \= 0)) -> write('You cant play that stack!'), nl, mainRecursive([H|T], [H1|T1], Counter)
+	(((Player = 0, Piece \= 1) ; (Player = 1, Piece \= 0)) -> write('You cant play that stack!'), nl, mainRecursive([H|T], [H1|T1], Counter, Win)
 	; write('You chose your stack correctly!'), nl
 	),
 
@@ -429,42 +434,44 @@ mainRecursive([H|T], [H1|T1], Counter) :-
 	write('Choose the number of pieces you wish to move:'), read(NP),
 	checkNPConditions([H|T], C1, R1, NP, F3),
 
-	(Result = 0 -> makeMoveB([H|T], C1, R1, C2, R2, NP, [H1|T1])
-	; makeMoveW([H|T], C1, R1, C2, R2, NP, [H1|T1])
+	(Player = 0 -> 
+		makeMoveB([H|T], C1, R1, C2, R2, NP, [H1|T1]); 
+		makeMoveW([H|T], C1, R1, C2, R2, NP, [H1|T1])
 	), 
 	display_game([H1|T1]),
+	arrayLength([H1|T1], MaxRow), 
+	arrayLength(H1, MaxCol),
+	checkWin([H1|T1], Player, MaxRow, MaxCol, 0, 0, Win),
+	
+	write(Player), write(' has won!'), nl;
 	Counter1 is Counter+1,
-	mainRecursive([H1|T1], New, Counter1).
+	mainRecursive([H1|T1], New, Counter1, Win).
+	
 
 
-
-
-%WIN CONDITION
-
-checkWin(_, _, A, B, A, B, Win):-
+% Checks the whole win condition
+checkWin(X, Player, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
 	Win is 0.
 checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
 	checkPiece(X, Row, Col, Flag),
-	write('Flag'),write(Flag),
-	write('Row:'),write(Row),
-	write('Col:'),write(Col),nl,nl,
 	Col1 is Col+1,
-	(Flag = Player ->
-		check(X, Row, Col, Player, W1);
-		(Col = MaxCol -> Row1 is Row + 1, checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win);
-		checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
-		)
-	),
-	(W1 = 1 -> Win is 1 ;
-		(Col = MaxCol -> Row1 is Row + 1, checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win)
-		; checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)				
+	(Flag =:= Player -> 
+		check(X, Row, Col, Player, W1),
+		(W1 =:= 1 -> 
+			Win is 1; 
+			(Col =:= MaxCol -> 
+				Row1 is Row +1, 
+				checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win); 
+				checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
+			)
+		);
+		(Col = MaxCol -> 
+			Row1 is Row + 1, 
+			checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win);
+			checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
 		)
 	).
 
-
-
-
-	
 % Checks 4 consecutive pieces of the same player in any direction (1: win; 0: didnt win)
 check(X, Row, Col, Player, Win):-
 
