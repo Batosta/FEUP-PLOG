@@ -6,11 +6,11 @@ initialBoard([
 ]).
 
 testBoard([
-[[empty, 1], [empty, 6], [empty, 11], [empty, 16], [empty, 21]],
-[[empty, 2], [empty, 7], [empty, 12], [empty, 17], [empty, 22]],
-[[empty, 3], [empty, 8], [black, 13], [white, 18], [empty, 23]],
-[[empty, 4], [empty, 9], [empty, 14], [empty, 19], [empty, 24]],
-[[empty, 5], [empty, 10], [empty, 15], [empty, 20], [empty, 25]]
+[[empty, 0], [black, 0], [empty, 0], [empty, 0], [empty, 0]],
+[[empty, 0], [black, 0], [black, 0], [black, 0], [black, 0]],
+[[empty, 0], [black, 0], [black, 0], [white, 0], [empty, 0]],
+[[empty, 0], [black, 0], [empty, 0], [black, 0], [empty, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [black, 0]]
 ]).
 
 % Symbols meaning
@@ -73,9 +73,7 @@ play :-
 play2 :-
 	initialBoard(X),
 	display_game(X),
-	mainRecursive(X, Y).
-
-
+	mainRecursive(X, Y, 0).
 
 
 % Prints any board
@@ -348,7 +346,6 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 	).
 
 
-
 % Checks the cases where a piece is outside the board (1: is not inside the board; 0: is inside)
 checkInsideBoard([H|T], IndC, IndR, Flag) :-
 	arrayLength(H, Col), 
@@ -359,8 +356,6 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 		((IndC @< 0 ; IndR @< 0) -> Flag is 1;
 		Flag is 0)
 	).
-
-
 
 % Checks all the conditions to see whether a piece is valid to be played (1: with errors; 0: can proceed)
 checkStackConditions([H|T], Col, Row, Flag) :-
@@ -397,33 +392,118 @@ checkNPConditions([H|T], Col, Row, Number, Flag) :-
 		Flag is 0
 	).
 
-
-
-makeMove([H|T], C1, R1, C2, R2, NP, Z):-
+makeMoveB([H|T], C1, R1, C2, R2, NP, Z):-
 	updatePiece([H|T], [], R1, C1, NP, black, Z1),
 	movePiece(Z1, [], R2, C2, NP, black, Z2),
 	boardResize(Z2, C2, R2, Z).
 
+makeMoveW([H|T], C1, R1, C2, R2, NP, Z):-
+	updatePiece([H|T], [], R1, C1, NP, white, Z1),
+	movePiece(Z1, [], R2, C2, NP, white, Z2),
+	boardResize(Z2, C2, R2, Z).
 
 
 % Recursive function that takes care of all the plays
-mainRecursive([H|T], [H1|T1]) :-
-	%write(Current turn: O/X),
+mainRecursive([H|T], [H1|T1], Counter) :-
+	Result is Counter mod 2,
+	(Result = 0 -> write('X turn to play!'), nl
+	;write('O turn to play!'), nl
+	),
 	write('Insert the coordinates of the stack you wish to move:'), nl,
 	write('Number of the column: '), read(C1),
 	write('Number of the row: '), read(R1),
 	checkStackConditions([H|T], C1, R1, F1),
-	
-	nl, nl,
+
+	checkPiece([H|T], R1, C1, Piece),
+	(((Result = 0, Piece \= 1) ; (Result = 1, Piece \= 0)) -> write('You cant play that stack!'), nl, mainRecursive([H|T], [H1|T1], Counter)
+	; write('You chose your stack correctly!'), nl
+	),
+
+	nl,
 	write('Insert the coordinates of the tile you wish to move your stack to:'), nl,
 	write('Number of the column: '), read(C2),
 	write('Number of the row: '), read(R2),
 	checkTileConditions([H|T], C1, R1, C2, R2, F2),
 
-	nl, nl,
+	nl, 
 	write('Choose the number of pieces you wish to move:'), read(NP),
 	checkNPConditions([H|T], C1, R1, NP, F3),
 
-	makeMove([H|T], C1, R1, C2, R2, NP, [H1|T1]),
+	(Result = 0 -> makeMoveB([H|T], C1, R1, C2, R2, NP, [H1|T1])
+	; makeMoveW([H|T], C1, R1, C2, R2, NP, [H1|T1])
+	), 
 	display_game([H1|T1]),
-	mainRecursive([H1|T1], New).
+	Counter1 is Counter+1,
+	mainRecursive([H1|T1], New, Counter1).
+
+checkHorizontal(X, Row, Col, Player, Win):-
+	A is Col+1,
+	B is Col+2,
+	C is Col+3,
+	checkInsideBoard(X, A, Row, F1),
+	checkInsideBoard(X, B, Row, F2),
+	checkInsideBoard(X, C, Row, F3),
+
+	checkPiece(X, Row, A, P1),
+	checkPiece(X, Row, B, P2),
+	checkPiece(X, Row, C, P3),
+	(Player = black -> 
+		(((F1 = 0, P1 = 1), (F2 = 0, P2 = 1), (F3 = 0, P3 = 1)) -> 
+			Win is 1
+		;	Win is 0
+		)
+	;	(((F1 = 0, P1 = 0), (F2 = 0, P2 = 0), (F3 = 0, P3 = 0)) -> 
+			Win is 2
+		;	Win is 0
+		)
+	).
+
+checkVertical(X, Row, Col, Player, Win):-
+	A is Row+1,
+	B is Row+2,
+	C is Row+3,
+	checkInsideBoard(X, Col, A, F1),
+	checkInsideBoard(X, Col, B, F2),
+	checkInsideBoard(X, Col, C, F3),
+
+	checkPiece(X, A, Col, P1),
+	checkPiece(X, B, Col, P2),
+	checkPiece(X, C, Col, P3),
+	(Player = black -> 
+		(((F1 = 0, P1 = 1), (F2 = 0, P2 = 1), (F3 = 0, P3 = 1)) -> 
+			Win is 1
+		;	Win is 0
+		)
+	;	(((F1 = 0, P1 = 0), (F2 = 0, P2 = 0), (F3 = 0, P3 = 0)) -> 
+			Win is 2
+		;	Win is 0
+		)
+	).
+
+checkDiagonal(X, Row, Col, Player, Win):-
+	R1 is Row+1,
+	C1 is Col+1,
+	
+	R2 is R1+1,
+	C2 is C1+1,
+
+	R3 is R2+1,
+	C3 is C2+1,
+
+	checkInsideBoard(X, R1, C1, F1),
+	checkInsideBoard(X, R2, C2, F2),
+	checkInsideBoard(X, R3, C3, F3),
+
+	checkPiece(X, R1, C1, P1),
+	checkPiece(X, R2, C2, P2),
+	checkPiece(X, R3, C3, P3),
+	(Player = black -> 
+		(((F1 = 0, P1 = 1), (F2 = 0, P2 = 1), (F3 = 0, P3 = 1)) -> 
+			Win is 1
+		;	Win is 0
+		)
+	;	(((F1 = 0, P1 = 0), (F2 = 0, P2 = 0), (F3 = 0, P3 = 0)) -> 
+			Win is 2
+		;	Win is 0
+		)
+	).
