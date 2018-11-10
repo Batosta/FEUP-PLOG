@@ -13,18 +13,6 @@ testBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0], [white, 0]]
 ]).
 
-
-[H|T], MaxCol, MaxRow, Col, Row
-check([H|T], Col, Row)
-
-
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[white, 0], [white, 0], [white, 0], [white, 0], [black, 0]],
-[[empty, 0], [empty, 0], [white, 0], [empty, 0], [black, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [white, 0]]
-]).
-
 % Symbols meaning
 symbol(white, S) :- S='O'.
 symbol(black, S) :- S='X'.
@@ -451,9 +439,16 @@ mainRecursive([H|T], [H1|T1], Counter) :-
 
 %WIN CONDITION
 
-checkWin(X, [H|T], Row, Col, Win):-
-	checkWinAux(X, H, )
+%tabuleiro, 20, 20, 0, 0, Win
+checkWin([H|T], MaxRow, MaxCol, Row, Col, Win):-
+	checkPiece([H|T], Row, Col, F1),
+	(F1 = 2 -> Col1 is Col+1, checkWin([H|T], MaxRow, MaxCol, Row, Col1, Win)
+	;	(F1 = 1 -> check([H|T], Row, Col, black, Winaux)
+		; check([H|T])	
+		)
+	)
 
+	
 %Returns 1 for black win, 2 for white win
 check(X, Row, Col, Player, Win):-
 	checkHorizontal(X, Row, Col, Player, Win1),
