@@ -98,3 +98,30 @@ winningMessage:-
     write('__________________________________________'),nl,nl,
     write('| Congratulations you Just won the game! |'),nl,
     write('__________________________________________'),nl.
+
+choseStack(Board, C, R, Player):-
+	write('To play'), nl,
+	write('Column : '), read(C),
+	write('Row    : '), read(R).
+
+choseWhereToMove(Board, C, R, Player):-
+	write('Where to play'), nl,
+	write('Column : '), read(C),
+	write('Row    : '), read(R).
+
+turn(Player):-
+	(Player = 1 ->
+    	write('__________________________________________'),nl,nl,
+   		write('|        X Player turn to play!           |'),nl,
+    	write('__________________________________________'),nl
+	;   write('__________________________________________'),nl,nl,
+    	write('|        O Player turn to play!            |'),nl,
+    	write('__________________________________________'),nl
+	).
+
+choseNumberPieces(Np):-
+	write('Number of pieces : '), read(Np).
+
+checkLengths([H|T], MaxRow, MaxCol):-
+	arrayLength([H|T], MaxRow), 
+	arrayLength(H, MaxCol).

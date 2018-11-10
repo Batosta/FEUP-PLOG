@@ -117,11 +117,11 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 	).
 
 % Checks all the conditions to see whether a piece is valid to be played (1: with errors; 0: can proceed)
-checkStackConditions([H|T], Col, Row, Flag) :-
+checkStackConditions([H|T], Col, Row, Player, Flag) :-
 	checkInsideBoard([H|T], Col, Row, F1),
-	(F1 =:= 1 -> write('The tile must belong to the board'), nl, Flag is 1;
+	(F1 =:= 1 -> write('The tile must belong to the board!'), nl, Flag is 1;
 		checkPiece([H|T], Row, Col, F2),
-		(F2 =:= 2 -> write('The tile must not be empty'), nl, Flag is 1;
+		(F2 =\= Player -> write('The tile is empty or belongs to another player!'), nl, Flag is 1;
 			Flag is 0
 		)
 	).
@@ -275,45 +275,35 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	; Win is 0
 	).
 
+
 % O é white e 1 é Black
 mainRecursive(_, _, 1):-
 	winningMessage.
-mainRecursive([H|T], Counter, Win) :-
+mainRecursive(Board, Counter, Win) :-
+	
 	Player is Counter mod 2,
-    
-	(Player \= 0 -> write('X turn to play!'), nl
-	;write('O turn to play!'), nl
-	),
-	write('Insert the coordinates of the stack you wish to move:'), nl,
-	write('Number of the column: '), read(C1),
-	write('Number of the row: '), read(R1),
-	checkStackConditions([H|T], C1, R1, F1),
 
-	checkPiece([H|T], R1, C1, Piece),
-	((Player \= Piece) -> 
-                write('You cant play that stack!'), nl, 
-                mainRecursive([H|T], Counter, Win)
-	; write('You chose your stack correctly!'), nl
-	),
+	(Player \= 0 -> turn(1), nl ; turn(0), nl ),
+	
+	choseStack(Board, C1, R1, Player),
+	checkStackConditions(Board, R1, C1, Player, F1), nl,
+	
+	choseWhereToMove(Board, C2, R2, Player),
+	checkTileConditions(Board, C1, R1, C2, R2, F2), 
 
-	nl,
-	write('Insert the coordinates of the tile you wish to move your stack to:'), nl,
-	write('Number of the column: '), read(C2),
-	write('Number of the row: '), read(R2),
-	checkTileConditions([H|T], C1, R1, C2, R2, F2),
-
-	nl, 
-	write('Choose the number of pieces you wish to move:'), read(NP),
-	checkNPConditions([H|T], C1, R1, NP, F3),
+	choseNumberPieces(Np),
+	checkNPConditions(Board, C1, R1, Np, F3),
 
 	(Player \= 0 -> 
-		makeMoveB([H|T], C1, R1, C2, R2, NP, [H1|T1]); 
-		makeMoveW([H|T], C1, R1, C2, R2, NP, [H1|T1])
+		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
+		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
 	), 
-	display_game([H1|T1]),
-	arrayLength([H1|T1], MaxRow), 
-	arrayLength(H1, MaxCol),
-	checkWin([H1|T1], Player, MaxRow, MaxCol, 0, 0, WinAux),
+
+	checkLengths(Board1, MaxRow, MaxCol),
+
+	display_game(Board1),
+
+	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
 
 	Counter1 is Counter+1,
-	mainRecursive([H1|T1], Counter1, WinAux).
+	mainRecursive(Board1, Counter1, WinAux).
