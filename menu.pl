@@ -27,7 +27,7 @@ handleInput(0) :-
 
 handleInput(1) :-
 	write('player vs player'), nl,
-	mainMenu.
+	play.
 
 handleInput(2) :-
 	write('player vs pc'), nl,
