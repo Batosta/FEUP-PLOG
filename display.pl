@@ -6,11 +6,23 @@ initialBoard([
 ]).
 
 testBoard([
-[[empty, 0], [black, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 0], [black, 0], [black, 0], [black, 0]],
-[[empty, 0], [black, 0], [black, 0], [white, 0], [empty, 0]],
-[[empty, 0], [black, 0], [empty, 0], [black, 0], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [black, 0]]
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
+[[white, 0], [white, 0], [white, 0], [white, 0], [black, 0]],
+[[empty, 0], [empty, 0], [white, 0], [empty, 0], [black, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [white, 0]]
+]).
+
+
+[H|T], MaxCol, MaxRow, Col, Row
+check([H|T], Col, Row)
+
+
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
+[[white, 0], [white, 0], [white, 0], [white, 0], [black, 0]],
+[[empty, 0], [empty, 0], [white, 0], [empty, 0], [black, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [white, 0]]
 ]).
 
 % Symbols meaning
@@ -435,6 +447,23 @@ mainRecursive([H|T], [H1|T1], Counter) :-
 	display_game([H1|T1]),
 	Counter1 is Counter+1,
 	mainRecursive([H1|T1], New, Counter1).
+
+
+%WIN CONDITION
+
+checkWin(X, [H|T], Row, Col, Win):-
+	checkWinAux(X, H, )
+
+%Returns 1 for black win, 2 for white win
+check(X, Row, Col, Player, Win):-
+	checkHorizontal(X, Row, Col, Player, Win1),
+	checkVertical(X, Row, Col, Player, Win2),
+	checkDiagonal(X, Row, Col, Player, Win3),
+	((Win1 = 1; Win2 = 1 ; Win3 = 1) -> Win is 1
+	; ((Win1 = 2; Win2 = 2; Win3 = 2) -> Win is 2 ; Win is 0)
+	). 
+
+%Each one returns 1 for black, returns 2 for white
 
 checkHorizontal(X, Row, Col, Player, Win):-
 	A is Col+1,
