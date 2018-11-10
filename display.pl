@@ -7,11 +7,11 @@ initialBoard([
 
 % Test board
 testBoard([
-[[empty, 0], [black, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 0], [empty, 0], [white, 0], [black, 0]],
-[[empty, 0], [black, 0], [white, 0], [empty, 0], [empty, 0]],
-[[white, 0], [black, 0], [white, 0], [white, 0], [black, 0]],
-[[white, 0], [empty, 0], [white, 0], [white, 0], [empty, 0]]
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
+[[empty, 0], [empty, 0], [black, 10], [empty, 0], [empty, 0]],
+[[empty, 0], [empty, 0], [black, 5], [white, 20], [empty, 0]],
+[[empty, 0], [empty, 0], [black, 5], [empty, 0], [empty, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
 % Symbols meaning

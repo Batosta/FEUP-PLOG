@@ -2,8 +2,9 @@
 
 play :-
 	initialBoard(X),
+    %testBoard(X),
 	display_game(X),
-	mainRecursive(X, Y, 0, 0).
+	mainRecursive(X, Y, 1, 0).
 
 
 % Checks the board needs to be resized
@@ -276,11 +277,12 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	; Win is 0
 	).
 
+% O é white e 1 é Black
 mainRecursive([H|T], [H1|T1], Counter, 1):-
 	write('Player has won!').
 mainRecursive([H|T], [H1|T1], Counter, Win) :-
 	Player is Counter mod 2,
-	(Player = 0 -> write('X turn to play!'), nl
+	(Player \= 0 -> write('X turn to play!'), nl
 	;write('O turn to play!'), nl
 	),
 	write('Insert the coordinates of the stack you wish to move:'), nl,
@@ -289,7 +291,9 @@ mainRecursive([H|T], [H1|T1], Counter, Win) :-
 	checkStackConditions([H|T], C1, R1, F1),
 
 	checkPiece([H|T], R1, C1, Piece),
-	(((Player = 0, Piece \= 1) ; (Player = 1, Piece \= 0)) -> write('You cant play that stack!'), nl, mainRecursive([H|T], [H1|T1], Counter, Win)
+	((Player \= Piece) -> 
+                write('You cant play that stack!'), nl, 
+                mainRecursive([H|T], [H1|T1], Counter, Win)
 	; write('You chose your stack correctly!'), nl
 	),
 
@@ -303,7 +307,7 @@ mainRecursive([H|T], [H1|T1], Counter, Win) :-
 	write('Choose the number of pieces you wish to move:'), read(NP),
 	checkNPConditions([H|T], C1, R1, NP, F3),
 
-	(Player = 0 -> 
+	(Player \= 0 -> 
 		makeMoveB([H|T], C1, R1, C2, R2, NP, [H1|T1]); 
 		makeMoveW([H|T], C1, R1, C2, R2, NP, [H1|T1])
 	), 
