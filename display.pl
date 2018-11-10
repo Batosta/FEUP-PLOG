@@ -5,6 +5,14 @@ initialBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
+testBoard([
+[[empty, 1], [empty, 6], [empty, 11], [empty, 16], [empty, 21]],
+[[empty, 2], [empty, 7], [empty, 12], [empty, 17], [empty, 22]],
+[[empty, 3], [empty, 8], [black, 13], [white, 18], [empty, 23]],
+[[empty, 4], [empty, 9], [empty, 14], [empty, 19], [empty, 24]],
+[[empty, 5], [empty, 10], [empty, 15], [empty, 20], [empty, 25]]
+]).
+
 % Symbols meaning
 symbol(white, S) :- S='O'.
 symbol(black, S) :- S='X'.
@@ -35,7 +43,7 @@ letter(24, S) :- S='X'.
 letter(25, S) :- S='Y'.
 letter(26, S) :- S='Z'.
 
-
+% To play the game. The recursive function that does, basically, everything
 play :-
 	initialBoard(X),
 	addColumnEnd(X, [H1|T1]),
@@ -46,22 +54,32 @@ play :-
 	addColumnStart([H5|T5], [H6|T6]),
 	addColumnEnd([H6|T6], [H7|T7]),
 	addRowStart([H7|T7], R3, P),
-	updatePiece(P, [], 3, 3, 5, black, F),
-	movePiece(F, [], 2, 5, 5, black, F1),
-	updatePiece(F1, [], 3, 4, 3, white, F2),
-	movePiece(F2, [], 1, 5, 3, white, F3),
-	checkPiece(F3, 0, 0, Empty),
-	(Empty = 2 ->
-		updatePiece(F3, [], 3, 3, 2, black, F4),
-		movePiece(F4, [], 0, 0, 2, black, F5),
-		boardResize(F5, 0, 0, F6),
-		display_game(F6, 1, L)
-	;	write('Cant move to that position, not empty!'),
-		display_game(F3, 1, L)	
-	).
+	updatePiece(P, [], 3, 3, 19, black, F),
+	movePiece(F, [], 2, 5, 7, black, F1),
+	display_game(F1).
+	%updatePiece(F1, [], 3, 4, 3, white, F2),
+	%movePiece(F2, [], 1, 5, 3, white, F3),
+	%checkPiece(F3, 0, 0, Empty),
+	%(Empty = 2 ->
+	%	updatePiece(F3, [], 3, 3, 2, black, F4),
+	%	movePiece(F4, [], 0, 0, 2, black, F5),
+	%	boardResize(F5, 0, 0, F6),
+	%	display_game(F6)
+	%;	write('Cant move to that position, not empty!'),
+	%	display_game(F3)	
+	%).
+
+
+play2 :-
+	initialBoard(X),
+	display_game(X),
+	mainRecursive(X, Y).
+
+
+
 
 % Prints any board
-display_game([H|T], Player, R) :-
+display_game([H|T]) :-
 
 	arrayLength(H, Columns), arrayLength([H|T], Rows),
 
@@ -85,16 +103,12 @@ printBoard([H|T], C, R, N) :-
 	write('|'), separation(C), write('|'),
 	printBoard(T, C, R1, N1).
 
-
-
 % [empty, 0]
 % Prints a full line
 printLine([]).
 printLine([H|T]) :-
 	printPair(H),
 	printLine(T).
-
-
 
 % empty
 % Prints a pair
@@ -105,15 +119,11 @@ printPair([H|T]) :-
 	write(S),
 	printNumber(T).
 
-
-
 % 0
 % Prints the number in a pair
 printNumber([], X).
 printNumber([H|T]) :-
 	(H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
-
-
 
 % Top of the table
 tableTop(C, C).
@@ -121,8 +131,6 @@ tableTop(C, X) :-
 	write(X), write('  |  '),
 	X1 is X + 1,
 	tableTop(C, X1).
-
-
 
 % Separation between 2 lines
 separation(-1).
@@ -147,8 +155,6 @@ createEmptyRow(P, Col, R):-
 	Col1 is Col - 1,
 	append(P, [[empty, 0]], Z),
 	createEmptyRow(Z, Col1, R).
-
-
 
 % Adds a full column to the end.
 addColumnEnd([], []).
@@ -231,10 +237,16 @@ replace([H|T], I, X, [H|R]) :-
 
 
 
-% Checks the pieces color/empty
-checkPiece([H|T], 0, Col, Piece):-
+% Checks the pieces color/empty (2: empty; 1: black; 0: white)
+checkPiece([H|T], Row, Col, Piece) :-
+	checkInsideBoard([H|T], Col, Row, Flag),
+	(Flag =:= 0 -> checkPiece1([H|T], Row, Col, Piece);
+		Piece is 2
+	).
+
+checkPiece1([H|T], 0, Col, Piece):-
 	checkPieceAux(H, Col, Piece).
-checkPiece([H|T], Row, Col, Piece):-
+checkPiece1([H|T], Row, Col, Piece):-
 	Row1 is Row-1,
 	checkPiece(T, Row1, Col, Piece).
 
@@ -248,6 +260,20 @@ checkPieceAux([[H|[H1|[]]]|T], 0, Piece):-
 checkPieceAux([H|T], Col, Piece):-
 	Col1 is Col-1,
 	checkPieceAux(T, Col1, Piece).
+
+
+% Checks the number of pieces in a certain tile
+checkNumber([H|T], 0, Col, Num):-
+	checkNumberAux(H, Col, Num).
+checkNumber([H|T], Row, Col, Num):-
+	Row1 is Row-1,
+	checkNumber(T, Row1, Col, Num).
+
+checkNumberAux([[H|[H1|[]]]|T], 0, Num):-
+	Num is H1.
+checkNumberAux([H|T], Col, Num):-
+	Col1 is Col-1,
+	checkNumberAux(T, Col1, Num).
 
 
 
@@ -296,7 +322,6 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 	F is R1 - 1,
 	G is R1 + 1,
 	I is R1 + 2,
-	% B.E, C.E, D.F, D.G, C.I, B.I, A.G, A.F
 	checkInsideBoard([H|T], B, E, F1),
 	((C2 =:= B , R2 =:= E , F1 =:= 0) -> Flag is 1;
 		checkInsideBoard([H|T], C, E, F2),
@@ -334,3 +359,71 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 		((IndC @< 0 ; IndR @< 0) -> Flag is 1;
 		Flag is 0)
 	).
+
+
+
+% Checks all the conditions to see whether a piece is valid to be played (1: with errors; 0: can proceed)
+checkStackConditions([H|T], Col, Row, Flag) :-
+	checkInsideBoard([H|T], Col, Row, F1),
+	(F1 =:= 1 -> write('The tile must belong to the board'), nl, Flag is 1;
+		checkPiece([H|T], Row, Col, F2),
+		(F2 =:= 2 -> write('The tile must not be empty'), nl, Flag is 1;
+			Flag is 0
+		)
+	).
+
+% Checks all the conditions to see whether a tile is valid to be played to (1: with errors; 0: can proceed)
+checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
+	checkInsideBoard([H|T], C2, R2, F1),
+	(F1 =:= 1 -> write('The tile must belong to the board'), nl, Flag is 1;
+		checkPiece([H|T], R2, C2, F2),
+		(F2 =\= 2 -> write('The tile must be empty'), nl, Flag is 1;
+			checkLPlay([H|T], C1, R1, C2, R2, F3),
+			(F3 =:= 0 -> write('The play must be in an L shape'), nl, Flag is 1;
+				checkAdjacents([H|T], R2, C2, F4),
+				(F4 =:= 0 -> write('The tile must have adjacent pieces'), nl, Flag is 1;
+					Flag is 0
+				)
+			)
+		)
+	).
+
+% Checks whether the number of pieces to be moved is valid
+checkNPConditions([H|T], Col, Row, Number, Flag) :-
+	checkNumber([H|T], Col, Row, N),
+	MaxNum is N - 1,
+	((Number @> MaxNum ; Number @< 1) -> write('The number of pieces to be moved from this tile must be between 1 and '), write(MaxNum), nl,
+		Flag is 1;
+		Flag is 0
+	).
+
+
+
+makeMove([H|T], C1, R1, C2, R2, NP, Z):-
+	updatePiece([H|T], [], R1, C1, NP, black, Z1),
+	movePiece(Z1, [], R2, C2, NP, black, Z2),
+	boardResize(Z2, C2, R2, Z).
+
+
+
+% Recursive function that takes care of all the plays
+mainRecursive([H|T], [H1|T1]) :-
+	%write(Current turn: O/X),
+	write('Insert the coordinates of the stack you wish to move:'), nl,
+	write('Number of the column: '), read(C1),
+	write('Number of the row: '), read(R1),
+	checkStackConditions([H|T], C1, R1, F1),
+	
+	nl, nl,
+	write('Insert the coordinates of the tile you wish to move your stack to:'), nl,
+	write('Number of the column: '), read(C2),
+	write('Number of the row: '), read(R2),
+	checkTileConditions([H|T], C1, R1, C2, R2, F2),
+
+	nl, nl,
+	write('Choose the number of pieces you wish to move:'), read(NP),
+	checkNPConditions([H|T], C1, R1, NP, F3),
+
+	makeMove([H|T], C1, R1, C2, R2, NP, [H1|T1]),
+	display_game([H1|T1]),
+	mainRecursive([H1|T1], New).
