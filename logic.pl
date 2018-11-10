@@ -1,10 +1,8 @@
-
-
 play :-
 	initialBoard(X),
     %testBoard(X),
 	display_game(X),
-	mainRecursive(X, Y, 1, 0).
+	mainRecursive(X, 1, 0).
 
 
 % Checks the board needs to be resized
@@ -15,8 +13,8 @@ boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	Row is Rows - 1,
 	((IndC =:= 0 ; IndR =:= 0 ; IndC =:= Col ; IndR =:= Row) -> 
 		addColumnEnd([H|T], [H1|T1]),
-		addRowEnd([H1|T1], R1, [H2|T2]),
-		addRowStart([H2|T2], R2, [H3|T3]),
+		addRowEnd([H1|T1], [H2|T2]),
+		addRowStart([H2|T2], [H3|T3]),
 		addColumnStart([H3|T3], [H4|T4]); 
 		append([], [H|T], [H4|T4])).
 
@@ -32,9 +30,9 @@ updatePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
 	append(New, [H], NewT),
 	updatePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
 
-updatePieceAux([[H1|T1]|T], 0, Number, Z):-
+updatePieceAux([[_|T1]|_], 0, Number, Z):-
 	Z is T1 - Number.
-updatePieceAux([H|T], IndCol, Number, Z):-
+updatePieceAux([_|T], IndCol, Number, Z):-
 	IndCol1 is IndCol - 1,
 	updatePieceAux(T, IndCol1, Number, Z).
 
@@ -164,7 +162,7 @@ makeMoveW([H|T], C1, R1, C2, R2, NP, Z):-
 	boardResize(Z2, C2, R2, Z).
 
 % Checks the whole win condition
-checkWin(X, Player, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
+checkWin(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
 	Win is 0.
 checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
 	checkPiece(X, Row, Col, Flag),
@@ -278,10 +276,11 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	).
 
 % O é white e 1 é Black
-mainRecursive([H|T], [H1|T1], Counter, 1):-
-	write('Player has won!').
-mainRecursive([H|T], [H1|T1], Counter, Win) :-
+mainRecursive(_, _, 1):-
+	winningMessage.
+mainRecursive([H|T], Counter, Win) :-
 	Player is Counter mod 2,
+    
 	(Player \= 0 -> write('X turn to play!'), nl
 	;write('O turn to play!'), nl
 	),
@@ -293,7 +292,7 @@ mainRecursive([H|T], [H1|T1], Counter, Win) :-
 	checkPiece([H|T], R1, C1, Piece),
 	((Player \= Piece) -> 
                 write('You cant play that stack!'), nl, 
-                mainRecursive([H|T], [H1|T1], Counter, Win)
+                mainRecursive([H|T], Counter, Win)
 	; write('You chose your stack correctly!'), nl
 	),
 
@@ -317,4 +316,4 @@ mainRecursive([H|T], [H1|T1], Counter, Win) :-
 	checkWin([H1|T1], Player, MaxRow, MaxCol, 0, 0, WinAux),
 
 	Counter1 is Counter+1,
-	mainRecursive([H1|T1], New, Counter1, WinAux).
+	mainRecursive([H1|T1], Counter1, WinAux).

@@ -47,7 +47,7 @@ letter(26, S) :- S='Z'.
 % Prints any board
 display_game([H|T]) :-
 
-	arrayLength(H, Columns), arrayLength([H|T], Rows),
+	arrayLength(H, Columns),
 
 	nl, write('|'), separation(Columns), write('|'), nl,
 	write('|/////|   '), tableTop(Columns, 0), nl,
@@ -95,8 +95,8 @@ printPair([H|T]) :-
 
 % 0
 % Prints the number in a pair
-printNumber([], X).
-printNumber([H|T]) :-
+printNumber([]).
+printNumber([H|_]) :-
 	(H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
 
 

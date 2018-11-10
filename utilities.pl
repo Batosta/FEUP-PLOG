@@ -1,7 +1,7 @@
 
 % Calculate an array size
 arrayLength([], 0).
-arrayLength([H|T], LenResult) :-
+arrayLength([_|T], LenResult) :-
 	arrayLength(T, L),
 	LenResult is L + 1.
 
@@ -25,13 +25,13 @@ addColumnStart([H|T], [H1|T1]):-
 	addColumnStart(T, T1).
 
 % Adds a full row in the end
-addRowEnd([H|T], R, Z) :-
+addRowEnd([H|T], Z) :-
 	arrayLength(H, Col),
 	createEmptyRow([], Col, R),
 	append([H|T], [R], Z).
 
 % Adds a full row in the start
-addRowStart([H|T], R, Z) :-
+addRowStart([H|T], Z) :-
 	arrayLength(H, Col),
 	createEmptyRow([], Col, R),
 	append([R], [H|T], Z).
@@ -50,34 +50,35 @@ checkPiece([H|T], Row, Col, Piece) :-
 		Piece is 2
 	).
 
-checkPiece1([H|T], 0, Col, Piece):-
+checkPiece1([H|_], 0, Col, Piece):-
 	checkPieceAux(H, Col, Piece).
-checkPiece1([H|T], Row, Col, Piece):-
+checkPiece1([_|T], Row, Col, Piece):-
 	Row1 is Row-1,
 	checkPiece(T, Row1, Col, Piece).
 
-checkPieceAux([[H|[H1|[]]]|T], 0, Piece):-
+
+checkPieceAux([[H|[_|[]]]|_], 0, Piece):-
 	(
 		H = white -> Piece is 0
 	;	( H = black -> Piece is 1
 		;	Piece is 2
 		)
 	).
-checkPieceAux([H|T], Col, Piece):-
+checkPieceAux([_|T], Col, Piece):-
 	Col1 is Col-1,
 	checkPieceAux(T, Col1, Piece).
 
 
 % Checks the number of pieces in a certain tile
-checkNumber([H|T], 0, Col, Num):-
+checkNumber([H|_], 0, Col, Num):-
 	checkNumberAux(H, Col, Num).
-checkNumber([H|T], Row, Col, Num):-
+checkNumber([_|T], Row, Col, Num):-
 	Row1 is Row-1,
 	checkNumber(T, Row1, Col, Num).
 
-checkNumberAux([[H|[H1|[]]]|T], 0, Num):-
+checkNumberAux([[_|[H1|[]]]|_], 0, Num):-
 	Num is H1.
-checkNumberAux([H|T], Col, Num):-
+checkNumberAux([_|T], Col, Num):-
 	Col1 is Col-1,
 	checkNumberAux(T, Col1, Num).
 
@@ -92,3 +93,8 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 		((IndC @< 0 ; IndR @< 0) -> Flag is 1;
 		Flag is 0)
 	).
+
+winningMessage:-
+    write('__________________________________________'),nl,nl,
+    write('| Congratulations you Just won the game! |'),nl,
+    write('__________________________________________'),nl.

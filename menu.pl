@@ -37,7 +37,8 @@ handleInput(3) :-
 	write('pc vs pc'), nl,
 	mainMenu.	
 
-handleInput(InvalidInput) :-
+handleInput(_Other) :-
 	write('Invalid input.'), nl,
-	write('______________________________________________'), nl, nl,
-	mainMenu.
+	write('Please insert a valid option: '),
+	read(Input),
+	handleInput(Input).
