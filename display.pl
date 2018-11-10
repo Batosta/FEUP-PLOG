@@ -6,11 +6,11 @@ initialBoard([
 ]).
 
 testBoard([
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[white, 0], [white, 0], [white, 0], [white, 0], [black, 0]],
-[[empty, 0], [empty, 0], [white, 0], [empty, 0], [black, 0]],
+[[empty, 0], [black, 0], [empty, 0], [empty, 0], [empty, 0]],
 [[empty, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0], [white, 0]]
+[[white, 0], [empty, 0], [empty, 0], [black, 0], [black, 0]],
+[[white, 0], [empty, 0], [empty, 0], [white, 0], [black, 0]],
+[[empty, 0], [black, 0], [empty, 0], [empty, 0], [black, 0]]
 ]).
 
 % Symbols meaning
@@ -437,74 +437,81 @@ mainRecursive([H|T], [H1|T1], Counter) :-
 	mainRecursive([H1|T1], New, Counter1).
 
 
+
+
 %WIN CONDITION
 
-%tabuleiro, 20, 20, 0, 0, Win
-checkWin([H|T], MaxRow, MaxCol, Row, Col, Win):-
-	checkPiece([H|T], Row, Col, F1),
-	(F1 = 2 -> Col1 is Col+1, checkWin([H|T], MaxRow, MaxCol, Row, Col1, Win)
-	;	(F1 = 1 -> check([H|T], Row, Col, black, Winaux)
-		; check([H|T])	
+checkWin(_, _, A, B, A, B, Win):-
+	Win is 0.
+checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
+	checkPiece(X, Row, Col, Flag),
+	write('Flag'),write(Flag),
+	write('Row:'),write(Row),
+	write('Col:'),write(Col),nl,nl,
+	Col1 is Col+1,
+	(Flag = Player ->
+		check(X, Row, Col, Player, W1);
+		(Col = MaxCol -> Row1 is Row + 1, checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win);
+		checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
 		)
-	)
+	),
+	(W1 = 1 -> Win is 1 ;
+		(Col = MaxCol -> Row1 is Row + 1, checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win)
+		; checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)				
+		)
+	).
+
+
+
 
 	
-%Returns 1 for black win, 2 for white win
+% Checks 4 consecutive pieces of the same player in any direction (1: win; 0: didnt win)
 check(X, Row, Col, Player, Win):-
+
 	checkHorizontal(X, Row, Col, Player, Win1),
 	checkVertical(X, Row, Col, Player, Win2),
-	checkDiagonal(X, Row, Col, Player, Win3),
-	((Win1 = 1; Win2 = 1 ; Win3 = 1) -> Win is 1
-	; ((Win1 = 2; Win2 = 2; Win3 = 2) -> Win is 2 ; Win is 0)
-	). 
+	checkDiagonal1(X, Row, Col, Player, Win3),
+	checkDiagonal2(X, Row, Col, Player, Win4),
+	((Win1 = 1; Win2 = 1; Win3 = 1; Win4 = 1) -> Win is 1 ; Win is 0).
 
-%Each one returns 1 for black, returns 2 for white
-
+% Checks 4 consecutive pieces of the same player in the horizontal (1: win; 0: didnt win)
 checkHorizontal(X, Row, Col, Player, Win):-
 	A is Col+1,
 	B is Col+2,
 	C is Col+3,
+
 	checkInsideBoard(X, A, Row, F1),
 	checkInsideBoard(X, B, Row, F2),
 	checkInsideBoard(X, C, Row, F3),
 
-	checkPiece(X, Row, A, P1),
-	checkPiece(X, Row, B, P2),
-	checkPiece(X, Row, C, P3),
-	(Player = black -> 
-		(((F1 = 0, P1 = 1), (F2 = 0, P2 = 1), (F3 = 0, P3 = 1)) -> 
-			Win is 1
-		;	Win is 0
-		)
-	;	(((F1 = 0, P1 = 0), (F2 = 0, P2 = 0), (F3 = 0, P3 = 0)) -> 
-			Win is 2
-		;	Win is 0
-		)
+	((F1 = 0, F2 = 0, F3 = 0) -> 
+		checkPiece(X, Row, A, P1),
+		checkPiece(X, Row, B, P2),
+		checkPiece(X, Row, C, P3),
+		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+	; Win is 0
 	).
 
+% Checks 4 consecutive pieces of the same player in the vertical (1: win; 0: didnt win)
 checkVertical(X, Row, Col, Player, Win):-
 	A is Row+1,
 	B is Row+2,
 	C is Row+3,
+
 	checkInsideBoard(X, Col, A, F1),
 	checkInsideBoard(X, Col, B, F2),
 	checkInsideBoard(X, Col, C, F3),
 
-	checkPiece(X, A, Col, P1),
-	checkPiece(X, B, Col, P2),
-	checkPiece(X, C, Col, P3),
-	(Player = black -> 
-		(((F1 = 0, P1 = 1), (F2 = 0, P2 = 1), (F3 = 0, P3 = 1)) -> 
-			Win is 1
-		;	Win is 0
-		)
-	;	(((F1 = 0, P1 = 0), (F2 = 0, P2 = 0), (F3 = 0, P3 = 0)) -> 
-			Win is 2
-		;	Win is 0
-		)
+	((F1 = 0, F2 = 0, F3 = 0) -> 
+		checkPiece(X, A, Col, P1),
+		checkPiece(X, B, Col, P2),
+		checkPiece(X, C, Col, P3),
+		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+	; Win is 0
 	).
 
-checkDiagonal(X, Row, Col, Player, Win):-
+% Checks 4 consecutive pieces of the same player in the first diagonal (1: win; 0: didnt win)
+checkDiagonal1(X, Row, Col, Player, Win):-
 	R1 is Row+1,
 	C1 is Col+1,
 	
@@ -518,16 +525,33 @@ checkDiagonal(X, Row, Col, Player, Win):-
 	checkInsideBoard(X, R2, C2, F2),
 	checkInsideBoard(X, R3, C3, F3),
 
-	checkPiece(X, R1, C1, P1),
-	checkPiece(X, R2, C2, P2),
-	checkPiece(X, R3, C3, P3),
-	(Player = black -> 
-		(((F1 = 0, P1 = 1), (F2 = 0, P2 = 1), (F3 = 0, P3 = 1)) -> 
-			Win is 1
-		;	Win is 0
-		)
-	;	(((F1 = 0, P1 = 0), (F2 = 0, P2 = 0), (F3 = 0, P3 = 0)) -> 
-			Win is 2
-		;	Win is 0
-		)
+	((F1 = 0, F2 = 0, F3 = 0) -> 
+		checkPiece(X, R1, C1, P1),
+		checkPiece(X, R2, C2, P2),
+		checkPiece(X, R3, C3, P3),
+		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+	; Win is 0
+	).
+
+% Checks 4 consecutive pieces of the same player in the second diagonal (1: win; 0: didnt win)
+checkDiagonal2(X, Row, Col, Player, Win):-
+	R1 is Row+1,
+	C1 is Col-1,
+	
+	R2 is R1+1,
+	C2 is C1-1,
+
+	R3 is R2+1,
+	C3 is C2-1,
+
+	checkInsideBoard(X, R1, C1, F1),
+	checkInsideBoard(X, R2, C2, F2),
+	checkInsideBoard(X, R3, C3, F3),
+
+	((F1 = 0, F2 = 0, F3 = 0) -> 
+		checkPiece(X, R1, C1, P1),
+		checkPiece(X, R2, C2, P2),
+		checkPiece(X, R3, C3, P3),
+		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+	; Win is 0
 	).
