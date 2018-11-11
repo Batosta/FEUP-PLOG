@@ -1,15 +1,15 @@
 % Initial board
 initialBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 20], [white, 20], [empty, 0]],
+[[empty, 0], [black, 2], [white, 2], [empty, 0]],
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
 % Test board
 testBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [empty, 0], [black, 10], [empty, 0], [empty, 0]],
-[[empty, 0], [empty, 0], [black, 5], [white, 20], [empty, 0]],
+[[empty, 0], [empty, 0], [black, 1], [empty, 0], [empty, 0]],
+[[empty, 0], [empty, 0], [black, 1], [white, 20], [empty, 0]],
 [[empty, 0], [empty, 0], [black, 5], [empty, 0], [empty, 0]],
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).

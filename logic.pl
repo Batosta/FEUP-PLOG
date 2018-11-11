@@ -1,6 +1,5 @@
 play :-
 	initialBoard(X),
-    %testBoard(X),
 	display_game(X),
 	mainRecursive(X, 1, 0).
 
@@ -279,10 +278,32 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	).
 
 
-%checkIfPossible2Play([H|T], Row, Col, Flag):-
+% 1: Não pode jogar mais, 0: pode jogar mais
+checkIfPossible(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Lose):-
+	Lose is 1.
+checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
+	checkPiece(X, Row, Col, Flag),
+	Col1 is Col+1,
+	(Flag =:= Player -> 
+		checkNumber(X, Row, Col, Num),
+		(Num \= 1 -> 
+			Lose is 0; 
+			(Col =:= MaxCol -> 
+				Row1 is Row +1, 
+				checkIfPossible(X, Player, MaxRow, MaxCol, Row1, 0, Lose); 
+				checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col1, Lose)
+			)
+		);
+		(Col = MaxCol -> 
+			Row1 is Row + 1, 
+			checkIfPossible(X, Player, MaxRow, MaxCol, Row1, 0, Lose);
+			checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col1, Lose)
+		)
+	).
 
 
 % O é white e 1 é Black
+
 mainRecursive(_, _, 1):-
 	winningMessage.
 mainRecursive(Board, Counter, _) :-
@@ -290,7 +311,7 @@ mainRecursive(Board, Counter, _) :-
 	Player is Counter mod 2,
 
 	(Player \= 0 -> turn(1), nl ; turn(0), nl ),
-	
+ 	
 	choseStack(Board, C1, R1, Player),
 	
 	choseWhereToMove(Board, C1, R1, C2, R2, Player),
@@ -303,11 +324,12 @@ mainRecursive(Board, Counter, _) :-
 	), 
 
 	checkLengths(Board1, MaxRow, MaxCol),
+	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
+	
+	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, Lose),
+	(Lose = 1 -> write('YOU LOSE'),nl;nl),
 
 	display_game(Board1),
 
-	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
-
 	Counter1 is Counter+1,
-
 	mainRecursive(Board1, Counter1, WinAux).

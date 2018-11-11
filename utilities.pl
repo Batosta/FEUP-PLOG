@@ -94,6 +94,11 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 		Flag is 0)
 	).
 
+loseMessage:-
+    write('__________________________________________'),nl,nl,
+    write('|         You just lost the game...       |'),nl,
+    write('__________________________________________'),nl.
+
 winningMessage:-
     write('__________________________________________'),nl,nl,
     write('| Congratulations you Just won the game! |'),nl,
