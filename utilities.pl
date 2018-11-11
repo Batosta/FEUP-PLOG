@@ -101,13 +101,17 @@ winningMessage:-
 
 choseStack(Board, C, R, Player):-
 	write('To play'), nl,
-	write('Column : '), read(C),
-	write('Row    : '), read(R).
+	write('Column : '), read(Ctest),
+	write('Row    : '), read(Rtest),
+	checkStackConditions(Board, Ctest, Rtest, Player, F1),
+	(F1 = 1 -> choseStack(Board, C, R, Player) ; C = Ctest, R = Rtest).
 
-choseWhereToMove(Board, C, R, Player):-
+choseWhereToMove(Board, C1, R1, C2, R2, Player):-
 	write('Where to play'), nl,
-	write('Column : '), read(C),
-	write('Row    : '), read(R).
+	write('Column : '), read(Ctest),
+	write('Row    : '), read(Rtest),
+	checkTileConditions(Board, C1, R1, Ctest, Rtest, F1),
+	(F1 = 1 -> choseWhereToMove(Board, C1, R1, C2, R2, Player) ; C2 = Ctest, R2 = Rtest).
 
 turn(Player):-
 	(Player = 1 ->
@@ -119,8 +123,10 @@ turn(Player):-
     	write('__________________________________________'),nl
 	).
 
-choseNumberPieces(Np):-
-	write('Number of pieces : '), read(Np).
+choseNumberPieces(Board, C, R, Np):-
+	write('Number of pieces : '), read(Nptest),
+	checkNPConditions(Board, R, C, Nptest, F1),
+	(F1 = 1 -> choseNumberPieces(Board, C, R, Np) ; Np = Nptest).
 
 checkLengths([H|T], MaxRow, MaxCol):-
 	arrayLength([H|T], MaxRow), 

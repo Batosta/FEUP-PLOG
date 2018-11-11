@@ -122,7 +122,10 @@ checkStackConditions([H|T], Col, Row, Player, Flag) :-
 	(F1 =:= 1 -> write('The tile must belong to the board!'), nl, Flag is 1;
 		checkPiece([H|T], Row, Col, F2),
 		(F2 =\= Player -> write('The tile is empty or belongs to another player!'), nl, Flag is 1;
+			checkNumber([H|T], Row, Col, Number),
+			(Number = 1 -> write('The tile only contains one piece, it cant be moved!'), nl, Flag is 1;
 			Flag is 0
+			)
 		)
 	).
 
@@ -276,23 +279,23 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	).
 
 
+%checkIfPossible2Play([H|T], Row, Col, Flag):-
+
+
 % O é white e 1 é Black
 mainRecursive(_, _, 1):-
 	winningMessage.
-mainRecursive(Board, Counter, Win) :-
+mainRecursive(Board, Counter, _) :-
 	
 	Player is Counter mod 2,
 
 	(Player \= 0 -> turn(1), nl ; turn(0), nl ),
 	
 	choseStack(Board, C1, R1, Player),
-	checkStackConditions(Board, R1, C1, Player, F1), nl,
 	
-	choseWhereToMove(Board, C2, R2, Player),
-	checkTileConditions(Board, C1, R1, C2, R2, F2), 
+	choseWhereToMove(Board, C1, R1, C2, R2, Player),
 
-	choseNumberPieces(Np),
-	checkNPConditions(Board, C1, R1, Np, F3),
+	choseNumberPieces(Board, C1, R1, Np),
 
 	(Player \= 0 -> 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
@@ -306,4 +309,5 @@ mainRecursive(Board, Counter, Win) :-
 	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
 
 	Counter1 is Counter+1,
+
 	mainRecursive(Board1, Counter1, WinAux).
