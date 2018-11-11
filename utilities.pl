@@ -1,4 +1,3 @@
-
 % Calculate an array size
 arrayLength([], 0).
 arrayLength([_|T], LenResult) :-
@@ -95,14 +94,19 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 	).
 
 loseMessage:-
-    write('__________________________________________'),nl,nl,
-    write('|         You just lost the game...       |'),nl,
-    write('__________________________________________'),nl.
+    write('__________________________________________________'),nl,nl,
+    write('|              You just lost the game...          |'),nl,
+    write('__________________________________________________'),nl.
 
 winningMessage:-
-    write('__________________________________________'),nl,nl,
-    write('| Congratulations you Just won the game! |'),nl,
-    write('__________________________________________'),nl.
+    write('__________________________________________________'), nl, nl,
+    write('|     Congratulations, you just won the game!     |'), nl,
+    write('__________________________________________________'), nl.
+
+noPiecesMessage:-
+	write('__________________________________________________'), nl, nl,
+    write('|No more pieces to play. You just lost the game...|'), nl,
+    write('__________________________________________________'), nl.
 
 choseStack(Board, C, R, Player):-
 	write('To play'), nl,
@@ -120,12 +124,12 @@ choseWhereToMove(Board, C1, R1, C2, R2, Player):-
 
 turn(Player):-
 	(Player = 1 ->
-    	write('__________________________________________'),nl,nl,
-   		write('|        X Player turn to play!           |'),nl,
-    	write('__________________________________________'),nl
-	;   write('__________________________________________'),nl,nl,
-    	write('|        O Player turn to play!            |'),nl,
-    	write('__________________________________________'),nl
+    	write('__________________________________________________'), nl, nl,
+   		write('|              X Player turn to play!             |'), nl,
+    	write('__________________________________________________'), nl
+	;   write('__________________________________________________'), nl, nl,
+    	write('|              O Player turn to play!             |'),nl,
+    	write('__________________________________________________'), nl
 	).
 
 choseNumberPieces(Board, C, R, Np):-

@@ -26,7 +26,6 @@ handleInput(0) :-
 	write('Exiting').
 
 handleInput(1) :-
-	write('player vs player'), nl,
 	play.
 
 handleInput(2) :-

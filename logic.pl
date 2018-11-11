@@ -1,7 +1,7 @@
 play :-
 	initialBoard(X),
 	display_game(X),
-	mainRecursive(X, 1, 0).
+	mainRecursive(X, 1, 0, 0).
 
 
 % Checks the board needs to be resized
@@ -278,7 +278,7 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	).
 
 
-% 1: Não pode jogar mais, 0: pode jogar mais
+% % Checks whether a player still has pieces to move (1: No more pieces; 0: Still has pieces)
 checkIfPossible(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Lose):-
 	Lose is 1.
 checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
@@ -302,11 +302,12 @@ checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
 	).
 
 
-% O é white e 1 é Black
-
-mainRecursive(_, _, 1):-
+% (1: black; 0: white)
+mainRecursive(_, _, 1, _):-
 	winningMessage.
-mainRecursive(Board, Counter, _) :-
+mainRecursive(_, _, _, 1):-
+	noPiecesMessage.
+mainRecursive(Board, Counter, _, _) :-
 	
 	Player is Counter mod 2,
 
@@ -325,11 +326,8 @@ mainRecursive(Board, Counter, _) :-
 
 	checkLengths(Board1, MaxRow, MaxCol),
 	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
-	
-	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, Lose),
-	(Lose = 1 -> write('YOU LOSE'),nl;nl),
 
 	display_game(Board1),
 
-	Counter1 is Counter+1,
-	mainRecursive(Board1, Counter1, WinAux).
+	Counter1 is Counter + 1,
+	mainRecursive(Board1, Counter1, WinAux, LoseAux).
