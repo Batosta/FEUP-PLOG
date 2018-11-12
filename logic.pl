@@ -85,7 +85,7 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 	A is C1 - 2,
 	B is C1 - 1,
 	C is C1 + 1,
-	D is C1 + 2,	
+	D is C1 + 2,
 	E is R1 - 2,
 	F is R1 - 1,
 	G is R1 + 1,
@@ -326,6 +326,8 @@ mainRecursive(Board, Counter, _, _) :-
 
 	checkLengths(Board1, MaxRow, MaxCol),
 	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
+	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
+
 
 	display_game(Board1),
 
