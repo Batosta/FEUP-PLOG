@@ -1,6 +1,6 @@
 playPLPC :-
 	initialBoard(X),
-	display_game(X),
+	%display_game(X),
 	mainRecursivePLPC(X, 1, 0, 0).
 
 chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
@@ -49,7 +49,8 @@ mainRecursivePLPC(_, _, 1, _):-
 mainRecursivePLPC(_, _, _, 1):-
 	noPiecesMessage.
 mainRecursivePLPC(Board, Counter, _, _) :-
-	
+	write('\33\[2J'),
+	display_game(Board),
 	Player is Counter mod 2,
 
 	(Player \= 0 -> 
@@ -75,3 +76,22 @@ mainRecursivePLPC(Board, Counter, _, _) :-
 
 	Counter1 is Counter + 1,
 	mainRecursivePLPC(Board1, Counter1, WinAux, LoseAux).
+
+%procura no mapa uma posição com uma peça empty e vê se tem Max peças na diagonal, vertical, horizontal, caso tenha, ve se existe em L uma peça white que possa jogar nesta posiçao 
+
+checkGreedy(_,_,_,_,_,0,_,_):-
+	%meter aqui a random do pretjinho
+
+checkGreedy(_,MaxRow, MaxCol, MaxRow, MaxCol, Max, JogR, JogC):-
+	Max1 is Max - 1,
+	checkGreedy(X, MaxRow, MaxCol, 0, 0, Max1, JogR, JogC).
+
+checkGreedy(X, MaxRow, MaxCol, R, C, Max, JogR, JogC):-
+	checkPiece(X, R, C, Flag),
+	C1 is C+1,
+	(Flag = 2 -> 
+		checkMax(X, R, C, Max, JogR, JogC); 
+		(C =:= MaxCol -> R1 is R+1, checkGreedy(X, MaxRow, MaxCol, R1, 0, Max, JogR, JogC) ; checkGreedy(X, MaxRow, MaxCol, R, C1, Max, JogR, JogC))
+	).
+
+checkMax(X, R, C, Mm JogR, JogC):-

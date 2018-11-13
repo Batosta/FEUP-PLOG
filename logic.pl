@@ -1,6 +1,6 @@
 playPLPL :-
 	initialBoard(X),
-	display_game(X),
+	%display_game(X),
 	mainRecursivePLPL(X, 1, 0, 0).
 
 
@@ -317,6 +317,10 @@ mainRecursivePLPL(_, _, 1, _):-
 mainRecursivePLPL(_, _, _, 1):-
 	noPiecesMessage.
 mainRecursivePLPL(Board, Counter, _, _) :-
+
+	write('\33\[2J'),
+
+	display_game(Board),
 	
 	Player is Counter mod 2,
 
