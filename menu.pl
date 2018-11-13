@@ -26,11 +26,10 @@ handleInput(0) :-
 	write('Exiting').
 
 handleInput(1) :-
-	play.
+	playPLPL.
 
 handleInput(2) :-
-	write('player vs pc'), nl,
-	mainMenu.
+	playPLPC.
 
 handleInput(3) :-
 	write('pc vs pc'), nl,

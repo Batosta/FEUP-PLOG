@@ -127,10 +127,10 @@ turn(Player):-
     	write('__________________________________________________'), nl
 	).
 
-choseNumberPieces(Board, C, R, Np):-
+choseNumberPieces(Board, C, R, Np, Counter):-
 	write('Number of pieces : '), read(Nptest),
-	checkNPConditions(Board, R, C, Nptest, F1),
-	(F1 = 1 -> choseNumberPieces(Board, C, R, Np) ; Np = Nptest).
+	checkNPConditions(Board, R, C, Nptest, F1, Counter),
+	(F1 = 1 -> choseNumberPieces(Board, C, R, Np, Counter) ; Np = Nptest).
 
 checkLengths([H|T], MaxRow, MaxCol):-
 	arrayLength([H|T], MaxRow), 

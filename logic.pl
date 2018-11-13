@@ -1,7 +1,7 @@
-play :-
+playPLPL :-
 	initialBoard(X),
 	display_game(X),
-	mainRecursive(X, 1, 0, 0).
+	mainRecursivePLPL(X, 1, 0, 0).
 
 
 % Checks the board needs to be resized
@@ -145,12 +145,21 @@ checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
 	).
 
 % Checks whether the number of pieces to be moved is valid
-checkNPConditions([H|T], Col, Row, Number, Flag) :-
-	checkNumber([H|T], Col, Row, N),
-	MaxNum is N - 1,
-	((Number @> MaxNum ; Number @< 1) -> write('The number of pieces to be moved from this tile must be between 1 and '), write(MaxNum), nl,
-		Flag is 1;
-		Flag is 0
+checkNPConditions([H|T], Col, Row, Number, Flag, Counter) :-
+	(Counter =:= 1 -> 
+		(Number =\= 1 -> 
+			write('You can only move 1 piece in the first move'), nl,
+			Flag is 1;
+			Flag is 0
+		);
+		checkNumber([H|T], Col, Row, N),
+		MaxNum is N - 1,
+		((Number @> MaxNum ; Number @< 1) -> 
+			write('The number of pieces to be moved from this tile must be between 1 and '), 
+			write(MaxNum), nl,
+			Flag is 1;
+			Flag is 0
+		)
 	).
 
 makeMoveB([H|T], C1, R1, C2, R2, NP, Z):-
@@ -303,11 +312,11 @@ checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
 
 
 % (1: black; 0: white)
-mainRecursive(_, _, 1, _):-
+mainRecursivePLPL(_, _, 1, _):-
 	winningMessage.
-mainRecursive(_, _, _, 1):-
+mainRecursivePLPL(_, _, _, 1):-
 	noPiecesMessage.
-mainRecursive(Board, Counter, _, _) :-
+mainRecursivePLPL(Board, Counter, _, _) :-
 	
 	Player is Counter mod 2,
 
@@ -317,7 +326,7 @@ mainRecursive(Board, Counter, _, _) :-
 	
 	choseWhereToMove(Board, C1, R1, C2, R2, Player),
 
-	choseNumberPieces(Board, C1, R1, Np),
+	choseNumberPieces(Board, C1, R1, Np, Counter),
 
 	(Player \= 0 -> 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
@@ -332,4 +341,4 @@ mainRecursive(Board, Counter, _, _) :-
 	display_game(Board1),
 
 	Counter1 is Counter + 1,
-	mainRecursive(Board1, Counter1, WinAux, LoseAux).
+	mainRecursivePLPL(Board1, Counter1, WinAux, LoseAux).
