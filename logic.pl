@@ -1,6 +1,5 @@
 playPLPL :-
 	initialBoard(X),
-	%display_game(X),
 	mainRecursivePLPL(X, 1, 0, 0).
 
 
@@ -317,19 +316,13 @@ mainRecursivePLPL(_, _, 1, _):-
 mainRecursivePLPL(_, _, _, 1):-
 	noPiecesMessage.
 mainRecursivePLPL(Board, Counter, _, _) :-
-
 	write('\33\[2J'),
-
 	display_game(Board),
-	
 	Player is Counter mod 2,
-
 	(Player \= 0 -> turn(1), nl ; turn(0), nl ),
  	
 	choseStack(Board, C1, R1, Player),
-	
 	choseWhereToMove(Board, C1, R1, C2, R2, Player),
-
 	choseNumberPieces(Board, C1, R1, Np, Counter),
 
 	(Player \= 0 -> 
@@ -340,7 +333,6 @@ mainRecursivePLPL(Board, Counter, _, _) :-
 	checkLengths(Board1, MaxRow, MaxCol),
 	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
 	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
-
 
 	display_game(Board1),
 

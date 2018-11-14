@@ -54,8 +54,7 @@ checkPiece1([H|_], 0, Col, Piece):-
 checkPiece1([_|T], Row, Col, Piece):-
 	Row1 is Row-1,
 	checkPiece(T, Row1, Col, Piece).
-
-
+	
 checkPieceAux([[H|[_|[]]]|_], 0, Piece):-
 	(
 		H = white -> Piece is 0
