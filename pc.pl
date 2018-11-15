@@ -1,11 +1,12 @@
-playPLPC :-
+playPLPC(Level) :-
 	initialBoard(X),
-	mainRecursivePLPC(X, 1, 0, 0).
+	mainRecursivePLPC(Level, X, 1, 0, 0).
 
-playPLPC2 :-
+playPLPC(Level) :-
 	initialBoard(X),
-	mainRecursivePLPC2(X, 1, 0, 0).
+	mainRecursivePLPC2(Level, X, 1, 0, 0).
 
+% Chooses a random stack to be played from the Player. Also chooses a random number of pieces.
 chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
 	random(0, ColSize, C1),
 	random(0, RowSize, R1),
@@ -21,6 +22,7 @@ chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
 		)
 	).
 
+% Chooses a random move in the L shape, starting in a certain stack
 chooseRandomLMove(X, Player, ColSize, RowSize, PieceC, PieceR, TileC, TileR) :-
 	random(0, ColSize, C2),
 	random(0, RowSize, R2),
@@ -39,6 +41,7 @@ chooseRandomLMove(X, Player, ColSize, RowSize, PieceC, PieceR, TileC, TileR) :-
 		)
 	).
 
+% Returns the position of the stack + number of pieces to be played + position to where they will be played
 pcMoveRandom(X, Player, C1, R1, C2, R2, Np) :-
 	checkLengths(X, RowSize, ColSize),
 	chooseRandomPieceNumber(X, Player, ColSize, RowSize, C1, R1, Np),
@@ -321,10 +324,8 @@ checkEmptyAux([[H|_]|T], X, Row, Col, Max, Aux, Empties):-
 botCoordinates(X, [], _, _, Piece, Tile):-
 	Tile = [],
 	Piece = [].
-
 botCoordinates(X, [H1|T1], [], Y, Piece, Tile):-
 	botCoordinates(X, T1, Y, Y, Piece, Tile).
-
 botCoordinates(X, [H1|T1], [H2|T2], Y, Piece, Tile):-
 	botCoordinatesAux(X, H1, H2, F),
 	(F = 1 -> 
@@ -339,13 +340,12 @@ botCoordinatesAux(X, [H|T], [H1|T1], Flag):-
 	(F = 1 -> Flag is 1 ; Flag is 0).
 
 
-
 % (1: black; 0: white)
-mainRecursivePLPC2(_, _, 1, _):-
+mainRecursivePLPC(_, _, _, 1, _):-
 	winningMessage.
-mainRecursivePLPC2(_, _, _, 1):-
+mainRecursivePLPC(_, _, _, _, 1):-
 	noPiecesMessage.
-mainRecursivePLPC2(Board, Counter, _, _) :-
+mainRecursivePLPC(Level, Board, Counter, _, _) :-
 	write('\33\[2J'),
 	display_game(Board),
 	Player is Counter mod 2,
@@ -357,12 +357,15 @@ mainRecursivePLPC2(Board, Counter, _, _) :-
 		choseNumberPieces(Board, C1, R1, Np, Counter);
 
 		turn(0), nl,
-		pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
-		C1 = H1, R1 = H, C2 = H3, R2 = H2,
-		%dar improve ao numero para escolher e por o bot so a jogar em segundo lugar porque senão ele so joga uma peça no lado esquerdo e n da mt jeito
-		checkNumber(Board, R1, C1, MaxN),
-		random(1, MaxN, Np)
+		(Level =:= 1 ->
+			pcMoveRandom(Board, Player, C1, R1, C2, R2, Np);
 
+			pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
+			C1 = H1, R1 = H, C2 = H3, R2 = H2,
+			%dar improve ao numero para escolher
+			checkNumber(Board, R1, C1, MaxN),
+			random(1, MaxN, Np)
+		)
 	),
 
 	(Player \= 0 -> 
@@ -377,42 +380,4 @@ mainRecursivePLPC2(Board, Counter, _, _) :-
 	display_game(Board1),
 
 	Counter1 is Counter + 1,
-	mainRecursivePLPC2(Board1, Counter1, WinAux, LoseAux).
-
-
-
-
-
-% (1: black; 0: white)
-mainRecursivePLPC(_, _, 1, _):-
-	winningMessage.
-mainRecursivePLPC(_, _, _, 1):-
-	noPiecesMessage.
-mainRecursivePLPC(Board, Counter, _, _) :-
-	write('\33\[2J'),
-	display_game(Board),
-	Player is Counter mod 2,
-
-	(Player \= 0 -> 
-		turn(1), nl,
-		choseStack(Board, C1, R1, Player),
-		choseWhereToMove(Board, C1, R1, C2, R2, Player),
-		choseNumberPieces(Board, C1, R1, Np, Counter);
-
-		turn(0), nl,
-		pcMoveRandom(Board, Player, C1, R1, C2, R2, Np)
-	),
-
-	(Player \= 0 -> 
-		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
-		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
-	), 
-
-	checkLengths(Board1, MaxRow, MaxCol),
-	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
-	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
-
-	display_game(Board1),
-
-	Counter1 is Counter + 1,
-	mainRecursivePLPC(Board1, Counter1, WinAux, LoseAux).
+	mainRecursivePLPC(Level, Board1, Counter1, WinAux, LoseAux).

@@ -1,7 +1,7 @@
 % Initial board
 initialBoard([
-[[white, 1], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 20], [white, 19], [empty, 0]],
+[[empty, 0], [empty, 0], [empty, 0], [empty, 0]],
+[[empty, 0], [black, 20], [white, 20], [empty, 0]],
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
