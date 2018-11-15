@@ -341,11 +341,11 @@ botCoordinatesAux(X, [H|T], [H1|T1], Flag):-
 
 
 % (1: black; 0: white)
-mainRecursivePLPC(_, _, 1, _):-
+mainRecursivePLPC2(_, _, 1, _):-
 	winningMessage.
-mainRecursivePLPC(_, _, _, 1):-
+mainRecursivePLPC2(_, _, _, 1):-
 	noPiecesMessage.
-mainRecursivePLPC(Board, Counter, _, _) :-
+mainRecursivePLPC2(Board, Counter, _, _) :-
 	write('\33\[2J'),
 	display_game(Board),
 	Player is Counter mod 2,
@@ -357,10 +357,14 @@ mainRecursivePLPC(Board, Counter, _, _) :-
 		choseNumberPieces(Board, C1, R1, Np, Counter);
 
 		turn(0), nl,
-		pcMove(Board, Player, 3, From, To)
-		%from é a stack escolhida, To é a posição escolhida para se colocar outra stack
+		pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
+		C1 = H1, R1 = H, C2 = H3, R2 = H2,
+		%dar improve ao numero para escolher e por o bot so a jogar em segundo lugar porque senão ele so joga uma peça no lado esquerdo e n da mt jeito
+		checkNumber(Board, R1, C1, MaxN),
+		random(1, MaxN, Np)
+
 	),
-/*
+
 	(Player \= 0 -> 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
 		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
@@ -373,18 +377,18 @@ mainRecursivePLPC(Board, Counter, _, _) :-
 	display_game(Board1),
 
 	Counter1 is Counter + 1,
-	mainRecursivePLPC(Board1, Counter1, WinAux, LoseAux).
-	*/
+	mainRecursivePLPC2(Board1, Counter1, WinAux, LoseAux).
+
 
 
 
 
 % (1: black; 0: white)
-mainRecursivePLPC2(_, _, 1, _):-
+mainRecursivePLPC(_, _, 1, _):-
 	winningMessage.
-mainRecursivePLPC2(_, _, _, 1):-
+mainRecursivePLPC(_, _, _, 1):-
 	noPiecesMessage.
-mainRecursivePLPC2(Board, Counter, _, _) :-
+mainRecursivePLPC(Board, Counter, _, _) :-
 	write('\33\[2J'),
 	display_game(Board),
 	Player is Counter mod 2,
