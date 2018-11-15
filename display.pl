@@ -1,18 +1,19 @@
 % Initial board
 initialBoard([
-[[empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 20], [white, 20], [empty, 0]],
+[[white, 1], [empty, 0], [empty, 0], [empty, 0]],
+[[empty, 0], [black, 20], [white, 19], [empty, 0]],
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
 % Test board
 testBoard([
-[[empty, 0], [white, 0], [black, 0], [white, 0], [empty, 0]],
-[[black, 1], [white, 2], [empty, 0], [black, 5], [black, 2]],
-[[empty, 0], [white, 5], [black, 4], [white, 15], [empty, 0]],
+[[black, 0], [white, 0], [empty, 2], [white, 3], [empty, 5]],
+[[black, 1], [empty, 2], [empty, 0], [black, 5], [black, 2]],
+[[empty, 0], [empty, 5], [emty, 4], [empty, 15], [white, 0]],
 [[white, 0], [black, 5], [black, 5], [empty, 0], [empty, 0]],
 [[empty, 0], [empty, 0], [black, 0], [empty, 0], [empty, 0]]
 ]).
+
 
 % Symbols meaning
 symbol(white, S) :- S='O'.
