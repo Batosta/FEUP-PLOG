@@ -8,10 +8,9 @@ initialBoard([
 % Test board
 testBoard([
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [black, 5], [white, 4], [empty, 0], [empty, 0], [empty, 0], [empty, 0]],
-[[empty, 0], [white, 2], [black, 3], [white, 1], [white, 4], [black, 3], [empty, 0]],
-[[empty, 0], [empty, 0], [white, 3], [black, 2], [black, 1], [white, 1], [empty, 0]],
-[[empty, 0], [empty, 0], [empty, 0], [white, 5], [black, 4], [black, 2], [empty, 0]],
+[[empty, 0], [white, 3], [black, 3], [white, 5], [empty, 0], [empty, 0], [empty, 0]],
+[[empty, 0], [white, 3], [black, 3], [black, 2], [white, 1], [empty, 0], [empty, 0]],
+[[empty, 0], [black, 4], [black, 4], [white, 4], [black, 4], [white, 4], [empty, 0]],
 [[empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0], [empty, 0]]
 ]).
 
