@@ -143,7 +143,7 @@ checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
 		)
 	).
 
-% Checks whether the number of pieces to be moved is valid
+% Checks whether the number of pieces to be moved is valid (1: invalid number; 0: valid)
 checkNPConditions([H|T], Col, Row, Number, Flag, Counter) :-
 	(Counter =:= 1 -> 
 		(Number =\= 1 -> 
@@ -321,9 +321,9 @@ mainRecursivePLPL(Board, Counter, _, _) :-
 	Player is Counter mod 2,
 	(Player \= 0 -> turn(1), nl ; turn(0), nl ),
  	
-	choseStack(Board, C1, R1, Player),
-	choseWhereToMove(Board, C1, R1, C2, R2, Player),
-	choseNumberPieces(Board, C1, R1, Np, Counter),
+	chooseStack(Board, C1, R1, Player),
+	chooseWhereToMove(Board, C1, R1, C2, R2, Player),
+	chooseNumberPieces(Board, C1, R1, Np, Counter),
 
 	(Player \= 0 -> 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 

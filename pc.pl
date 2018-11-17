@@ -2,9 +2,9 @@ playPLPC(Level) :-
 	initialBoard(X),
 	mainRecursivePLPC(Level, X, 1, 0, 0).
 
-playPLPC(Level) :-
+playPCPC :-
 	initialBoard(X),
-	mainRecursivePLPC2(Level, X, 1, 0, 0).
+	mainRecursivePCPC(X, 1, 0, 0).
 
 % Chooses a random stack to be played from the Player. Also chooses a random number of pieces.
 chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
@@ -53,7 +53,12 @@ pcMove(X, Player, Max, From, To):-
 	checkEmpty(X, X, 0, 0, Max, [], Jog),
 	getWhites(X, 0, 0, [], Coords),
 	botCoordinates(X, Jog, Coords, Coords, Piece, Tile),
-	((Piece = [], Tile = []) -> Max1 is Max-1, pcMove(X, Player, Max1, From, To) ; From = Piece, To = Tile).
+	((Piece = [], Tile = []) -> 
+		Max1 is Max-1, 
+		pcMove(X, Player, Max1, From, To); 
+		From = Piece, 
+		To = Tile
+	).
 
 
 
@@ -264,7 +269,7 @@ checkNumberDiagonal2(X, Player, Col, Row, Number) :-
 		Number is NumbAux
 	).
 
-%-------------------------------------------------BOT INTELIGENTE------------------------------------------------------------------
+%-------------------------------------------------BOT INTELIGENTE--------------------------------------------------
 
 
 checkAll(X, Player, Col, Row, Max, Flag):-
@@ -293,7 +298,7 @@ getWhitesAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
 
 
 %percorre o tabuleiro e encontra empties que tenham nas redondezas Max peças. Ou seja, posições ótimas para se jogar. RETORNA JOG
-checkEmpty([], X, _, _, Max, Aux, Jog):-
+checkEmpty([], _, _, _, _, Aux, Jog):-
 	append([], Aux, Jog).
 checkEmpty([H|T], X, Row, Col, Max, Temp, Jog):-
 	Row1 is Row+1,
@@ -321,10 +326,10 @@ checkEmptyAux([[H|_]|T], X, Row, Col, Max, Aux, Empties):-
 %Função que recebe as posições White e as empty com Max peças à volta. Se uma White fizer L com alguma empty, retorna essa posição imediatamente. Algoritmo ganancioso.
 %argumentos: Tabuleiro atual, Lista com empties com Max peças a volta, Lista com todos os Whites, Jogada R a fazer, Jogada C a fazer
 
-botCoordinates(X, [], _, _, Piece, Tile):-
+botCoordinates(_, [], _, _, Piece, Tile):-
 	Tile = [],
 	Piece = [].
-botCoordinates(X, [H1|T1], [], Y, Piece, Tile):-
+botCoordinates(X, [_|T1], [], Y, Piece, Tile):-
 	botCoordinates(X, T1, Y, Y, Piece, Tile).
 botCoordinates(X, [H1|T1], [H2|T2], Y, Piece, Tile):-
 	botCoordinatesAux(X, H1, H2, F),
@@ -334,7 +339,6 @@ botCoordinates(X, [H1|T1], [H2|T2], Y, Piece, Tile):-
 	;
 		botCoordinates(X, [H1|T1], T2, Y, Piece, Tile)
 	).
-
 botCoordinatesAux(X, [H|T], [H1|T1], Flag):-
 	checkLPlay(X, H1, T1, H, T, F),
 	(F = 1 -> Flag is 1 ; Flag is 0).
@@ -352,9 +356,9 @@ mainRecursivePLPC(Level, Board, Counter, _, _) :-
 
 	(Player \= 0 -> 
 		turn(1), nl,
-		choseStack(Board, C1, R1, Player),
-		choseWhereToMove(Board, C1, R1, C2, R2, Player),
-		choseNumberPieces(Board, C1, R1, Np, Counter);
+		chooseStack(Board, C1, R1, Player),
+		chooseWhereToMove(Board, C1, R1, C2, R2, Player),
+		chooseNumberPieces(Board, C1, R1, Np, Counter);
 
 		turn(0), nl,
 		(Level =:= 1 ->
@@ -381,3 +385,36 @@ mainRecursivePLPC(Level, Board, Counter, _, _) :-
 
 	Counter1 is Counter + 1,
 	mainRecursivePLPC(Level, Board1, Counter1, WinAux, LoseAux).
+
+
+
+mainRecursivePCPC(_, _, 1, _):-
+	winningMessage.
+mainRecursivePCPC(_, _, _, 1):-
+	noPiecesMessage.
+mainRecursivePCPC(Board, Counter, _, _) :-
+
+	display_game(Board),
+	Player is Counter mod 2,
+	write(Player),
+
+	turn(Player), nl,
+	pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
+	C1 = H1, R1 = H, C2 = H3, R2 = H2,
+	%dar improve ao numero para escolher
+	checkNumber(Board, R1, C1, MaxN),
+	random(1, MaxN, Np),
+
+	(Player \= 0 -> 
+		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
+		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
+	), 
+
+	checkLengths(Board1, MaxRow, MaxCol),
+	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
+	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
+
+	display_game(Board1),
+
+	Counter1 is Counter + 1,
+	mainRecursivePCPC(Board1, Counter1, WinAux, LoseAux).

@@ -97,9 +97,12 @@ printPair([H|T]) :-
 % 0
 % Prints the number in a pair
 printNumber([]).
+printNumber([21|_]) :-
+	write('asdasd').
 printNumber([H|_]) :-
-	(H > 9 -> write(','), write(H), write('| '); write(','), write(H), write(' | ')).
-
+	(H > 9 -> 
+		write(','), write(H), write('| '); 
+		write(','), write(H), write(' | ')).
 
 
 % Top of the table

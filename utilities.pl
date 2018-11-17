@@ -43,28 +43,29 @@ replace([H|T], I, X, [H|R]) :-
     replace(T, I1, X, R).
 
 % Checks the pieces color/empty (2: empty; 1: black; 0: white)
-checkPiece([H|T], Row, Col, Piece) :-
-	checkInsideBoard([H|T], Col, Row, Flag),
-	(Flag =:= 0 -> checkPiece1([H|T], Row, Col, Piece);
-		Piece is 2
-	).
+checkPiece(X, Row, Col, Piece) :-
+	checkInsideBoard(X, Col, Row, Flag),
+	checkPieceAux1(X, Row, Col, Piece, Flag).
+checkPieceAux1(X, Row, Col, Piece, 0) :-
+	checkPiece1(X, Row, Col, Piece).
+checkPieceAux1(_, _, _, Piece, 1) :-
+	Piece is 2.
 
 checkPiece1([H|_], 0, Col, Piece):-
-	checkPieceAux(H, Col, Piece).
+	checkPieceAux2(H, Col, Piece).
 checkPiece1([_|T], Row, Col, Piece):-
 	Row1 is Row-1,
 	checkPiece(T, Row1, Col, Piece).
 	
-checkPieceAux([[H|[_|[]]]|_], 0, Piece):-
-	(
-		H = white -> Piece is 0
-	;	( H = black -> Piece is 1
-		;	Piece is 2
-		)
-	).
-checkPieceAux([_|T], Col, Piece):-
+checkPieceAux2([[white|[_|[]]]|_], 0, Piece):-
+	Piece is 0.
+checkPieceAux2([[black|[_|[]]]|_], 0, Piece):-
+	Piece is 1.
+checkPieceAux2([[empty|[_|[]]]|_], 0, Piece):-
+	Piece is 2.
+checkPieceAux2([_|T], Col, Piece):-
 	Col1 is Col-1,
-	checkPieceAux(T, Col1, Piece).
+	checkPieceAux2(T, Col1, Piece).
 
 
 % Checks the number of pieces in a certain tile
@@ -102,34 +103,49 @@ noPiecesMessage:-
     write('|No more pieces to play. You just lost the game...|'), nl,
     write('__________________________________________________'), nl.
 
-choseStack(Board, C, R, Player):-
+chooseStack(Board, C, R, Player):-
 	write('To play'), nl,
 	write('Column : '), read(Ctest),
 	write('Row    : '), read(Rtest),
 	checkStackConditions(Board, Ctest, Rtest, Player, F1),
-	(F1 = 1 -> choseStack(Board, C, R, Player) ; C = Ctest, R = Rtest).
+	chooseStackAux(Board, C, R, Player, F1, Ctest, Rtest).
+chooseStackAux(Board, C, R, Player, 1, _, _) :-
+	chooseStack(Board, C, R, Player).
+chooseStackAux(_, C, R, _, 0, Ctest, Rtest) :-
+	C is Ctest, 
+	R is Rtest.
 
-choseWhereToMove(Board, C1, R1, C2, R2, Player):-
+chooseWhereToMove(Board, C1, R1, C2, R2, Player):-
 	write('Where to play'), nl,
 	write('Column : '), read(Ctest),
 	write('Row    : '), read(Rtest),
 	checkTileConditions(Board, C1, R1, Ctest, Rtest, F1),
-	(F1 = 1 -> choseWhereToMove(Board, C1, R1, C2, R2, Player) ; C2 = Ctest, R2 = Rtest).
+	chooseWhereToMoveAux(Board, C1, R1, C2, R2, Player, F1, Ctest, Rtest).
+chooseWhereToMoveAux(Board, C1, R1, C2, R2, Player, 1, _, _) :-
+	chooseWhereToMove(Board, C1, R1, C2, R2, Player).
+chooseWhereToMoveAux(_, _, _, C2, R2, _, 0, Ctest, Rtest) :-
+	C2 is Ctest,
+	R2 is Rtest.
 
-turn(Player):-
-	(Player = 1 ->
-    	write('__________________________________________________'), nl, nl,
-   		write('|              X Player turn to play!             |'), nl,
-    	write('__________________________________________________'), nl
-	;   write('__________________________________________________'), nl, nl,
-    	write('|              O Player turn to play!             |'),nl,
-    	write('__________________________________________________'), nl
-	).
 
-choseNumberPieces(Board, C, R, Np, Counter):-
+turn(0) :-
+	write('__________________________________________________'), nl, nl,
+    write('|              O Player turn to play!             |'),nl,
+    write('__________________________________________________'), nl.
+turn(1) :-
+    write('__________________________________________________'), nl, nl,
+   	write('|              X Player turn to play!             |'), nl,
+    write('__________________________________________________'), nl.
+
+chooseNumberPieces(Board, C, R, Np, Counter):-
 	write('Number of pieces : '), read(Nptest),
 	checkNPConditions(Board, R, C, Nptest, F1, Counter),
-	(F1 = 1 -> choseNumberPieces(Board, C, R, Np, Counter) ; Np = Nptest).
+	chooseNumberPiecesAux(Board, C, R, Np, Counter, F1, Nptest).
+chooseNumberPiecesAux(Board, C, R, Np, Counter, 1, _):-
+	chooseNumberPieces(Board, C, R, Np, Counter).
+chooseNumberPiecesAux(_, _, _, Np, _, 0, Nptest):-
+	Np is Nptest.
+
 
 checkLengths([H|T], MaxRow, MaxCol):-
 	arrayLength([H|T], MaxRow), 

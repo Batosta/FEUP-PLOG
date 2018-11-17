@@ -23,8 +23,7 @@ mainMenu :-
 	read(Input),
 	handleInput(Input).
 
-handleInput(0) :-
-	write('Exiting').
+handleInput(0).
 handleInput(1) :-
 	playPLPL.
 handleInput(2) :-
@@ -35,7 +34,7 @@ handleInput(2) :-
 	read(Level),
 	level(Level).
 handleInput(3) :-
-	write('pc vs pc').
+	playPCPC.
 handleInput(4) :-
 	nl, write('Each player starts with one stack of twenty pieces each.'), nl,
 	write('The winner is the player that is able to move his pieces in such a way that there are four consecutive stacks in the same direction of the same color.'), nl,
@@ -49,13 +48,10 @@ handleInput(_Other) :-
 	read(Input),
 	handleInput(Input).
 
-
 level(1):-
 	playPLPC(1).
-
 level(2):-
 	playPLPC(2).
-
 level(_Other) :-
 	write('Invalid input.'), nl,
 	write('Please insert a valid option: '),
