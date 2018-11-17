@@ -457,7 +457,7 @@ mainRecursivePCPC(Board, Counter, _, _) :-
 	choose_move(Board, Player, 2, C1, R1, C2, R2, Np, Counter),
 	move(Board, Player, C1, R1, C2, R2, Np, Board1),
 
-	sleep(5),
+	sleep(3),
 
 	checkLengths(Board1, MaxRow, MaxCol),
 	game_over(Board1, Player, MaxRow, MaxCol, WinAux, LoseAux),

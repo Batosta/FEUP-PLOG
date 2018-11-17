@@ -106,7 +106,8 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 winningMessage:-
     write('__________________________________________________'), nl, nl,
     write('|     Congratulations, you just won the game!     |'), nl,
-    write('__________________________________________________'), nl.
+    write('__________________________________________________'), nl,
+    mainMenu.
 % Prints the losing message
 noPiecesMessage:-
 	write('__________________________________________________'), nl, nl,
