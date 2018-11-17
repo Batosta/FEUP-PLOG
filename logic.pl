@@ -9,7 +9,7 @@ boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	arrayLength([H|T], Rows),
 	Col is Columns - 1,
 	Row is Rows - 1,
-	((IndC =:= 0 ; IndR =:= 0 ; IndC =:= Col ; IndR =:= Row) -> 
+	((IndC =:= 0 ; IndR =:= 0 ; IndC =:= Col ; IndR =:= Row) , 
 		addColumnEnd([H|T], [H1|T1]),
 		addRowEnd([H1|T1], [H2|T2]),
 		addRowStart([H2|T2], [H3|T3]),
@@ -55,21 +55,21 @@ checkAdjacents([H|T], IndR, IndC, Flag) :-
 	E is IndC,
 	F is IndC - 1,
 	checkPiece([H|T], C, F, P1),
-	(P1 =\= 2 -> Flag is 1;
+	(P1 =\= 2 , Flag is 1;
 		checkPiece([H|T], C, E, P2),
-		(P2 =\= 2 -> Flag is 1;
+		(P2 =\= 2 , Flag is 1;
 			checkPiece([H|T], C, D, P3),	
-			(P3 =\= 2 -> Flag is 1;
+			(P3 =\= 2 , Flag is 1;
 				checkPiece([H|T], B, D, P4),
-				(P4 =\= 2 -> Flag is 1;
+				(P4 =\= 2 , Flag is 1;
 					checkPiece([H|T], A, D, P5),
-					(P5 =\= 2 -> Flag is 1;
+					(P5 =\= 2 , Flag is 1;
 						checkPiece([H|T], A, E, P6),
-						(P6 =\= 2 -> Flag is 1;
+						(P6 =\= 2 , Flag is 1;
 							checkPiece([H|T], A, F, P7),
-							(P7 =\= 2 -> Flag is 1;
+							(P7 =\= 2 , Flag is 1;
 								checkPiece([H|T], B, F, P8),
-								(P8 =\= 2 -> Flag is 1;
+								(P8 =\= 2 , Flag is 1;
 								Flag is 0)
 							)
 						)
@@ -90,21 +90,21 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 	G is R1 + 1,
 	I is R1 + 2,
 	checkInsideBoard([H|T], B, E, F1),
-	((C2 =:= B , R2 =:= E , F1 =:= 0) -> Flag is 1;
+	((C2 =:= B , R2 =:= E , F1 =:= 0) , Flag is 1;
 		checkInsideBoard([H|T], C, E, F2),
-		((C2 =:= C , R2 =:= E , F2 =:= 0) -> Flag is 1;
+		((C2 =:= C , R2 =:= E , F2 =:= 0) , Flag is 1;
 			checkInsideBoard([H|T], D, F, F3),
-			((C2 =:= D , R2 =:= F , F3 =:= 0) -> Flag is 1;
+			((C2 =:= D , R2 =:= F , F3 =:= 0) , Flag is 1;
 				checkInsideBoard([H|T], D, G, F4),
-				((C2 =:= D , R2 =:= G , F4 =:= 0) -> Flag is 1;
+				((C2 =:= D , R2 =:= G , F4 =:= 0) , Flag is 1;
 					checkInsideBoard([H|T], C, I, F5),
-					((C2 =:= C , R2 =:= I , F5 =:= 0) -> Flag is 1;
+					((C2 =:= C , R2 =:= I , F5 =:= 0) , Flag is 1;
 						checkInsideBoard([H|T], B, I, F6),
-						((C2 =:= B , R2 =:= I , F6 =:= 0) -> Flag is 1;
+						((C2 =:= B , R2 =:= I , F6 =:= 0) , Flag is 1;
 							checkInsideBoard([H|T], A, G, F7),
-							((C2 =:= A , R2 =:= G , F7 =:= 0) -> Flag is 1;
+							((C2 =:= A , R2 =:= G , F7 =:= 0) , Flag is 1;
 								checkInsideBoard([H|T], A, F, F8),
-								((C2 =:= A , R2 =:= F , F8 =:= 0) -> Flag is 1;
+								((C2 =:= A , R2 =:= F , F8 =:= 0) , Flag is 1;
 								Flag is 0)
 							)
 						)
@@ -117,11 +117,11 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 % Checks all the conditions to see whether a piece is valid to be played (1: with errors; 0: can proceed)
 checkStackConditions([H|T], Col, Row, Player, Flag) :-
 	checkInsideBoard([H|T], Col, Row, F1),
-	(F1 =:= 1 -> write('The tile must belong to the board!'), nl, Flag is 1;
+	(F1 =:= 1 , write('The tile must belong to the board!'), nl, Flag is 1;
 		checkPiece([H|T], Row, Col, F2),
-		(F2 =\= Player -> write('The tile is empty or belongs to another player!'), nl, Flag is 1;
+		(F2 =\= Player , write('The tile is empty or belongs to another player!'), nl, Flag is 1;
 			checkNumber([H|T], Row, Col, Number),
-			(Number = 1 -> write('The tile only contains one piece, it cant be moved!'), nl, Flag is 1;
+			(Number = 1 , write('The tile only contains one piece, it cant be moved!'), nl, Flag is 1;
 			Flag is 0
 			)
 		)
@@ -130,13 +130,13 @@ checkStackConditions([H|T], Col, Row, Player, Flag) :-
 % Checks all the conditions to see whether a tile is valid to be played to (1: with errors; 0: can proceed)
 checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
 	checkInsideBoard([H|T], C2, R2, F1),
-	(F1 =:= 1 -> write('The tile must belong to the board'), nl, Flag is 1;
+	(F1 =:= 1 , write('The tile must belong to the board'), nl, Flag is 1;
 		checkPiece([H|T], R2, C2, F2),
-		(F2 =\= 2 -> write('The tile must be empty'), nl, Flag is 1;
+		(F2 =\= 2 , write('The tile must be empty'), nl, Flag is 1;
 			checkLPlay([H|T], C1, R1, C2, R2, F3),
-			(F3 =:= 0 -> write('The play must be in an L shape'), nl, Flag is 1;
+			(F3 =:= 0 , write('The play must be in an L shape'), nl, Flag is 1;
 				checkAdjacents([H|T], R2, C2, F4),
-				(F4 =:= 0 -> write('The tile must have adjacent pieces'), nl, Flag is 1;
+				(F4 =:= 0 , write('The tile must have adjacent pieces'), nl, Flag is 1;
 					Flag is 0
 				)
 			)
@@ -145,15 +145,15 @@ checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
 
 % Checks whether the number of pieces to be moved is valid (1: invalid number; 0: valid)
 checkNPConditions([H|T], Col, Row, Number, Flag, Counter) :-
-	(Counter =:= 1 -> 
-		(Number =\= 1 -> 
+	(Counter =:= 1 , 
+		(Number =\= 1 , 
 			write('You can only move 1 piece in the first move'), nl,
 			Flag is 1;
 			Flag is 0
 		);
 		checkNumber([H|T], Col, Row, N),
 		MaxNum is N - 1,
-		((Number @> MaxNum ; Number @< 1) -> 
+		((Number @> MaxNum ; Number @< 1) , 
 			write('The number of pieces to be moved from this tile must be between 1 and '), 
 			write(MaxNum), nl,
 			Flag is 1;
@@ -177,17 +177,17 @@ checkWin(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
 checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
 	checkPiece(X, Row, Col, Flag),
 	Col1 is Col+1,
-	(Flag =:= Player -> 
+	(Flag =:= Player , 
 		check(X, Row, Col, Player, W1),
-		(W1 =:= 1 -> 
+		(W1 =:= 1 , 
 			Win is 1; 
-			(Col =:= MaxCol -> 
+			(Col =:= MaxCol , 
 				Row1 is Row +1, 
 				checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win); 
 				checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
 			)
 		);
-		(Col = MaxCol -> 
+		(Col = MaxCol , 
 			Row1 is Row + 1, 
 			checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win);
 			checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
@@ -201,7 +201,7 @@ check(X, Row, Col, Player, Win):-
 	checkVertical(X, Row, Col, Player, Win2),
 	checkDiagonal1(X, Row, Col, Player, Win3),
 	checkDiagonal2(X, Row, Col, Player, Win4),
-	((Win1 = 1; Win2 = 1; Win3 = 1; Win4 = 1) -> Win is 1 ; Win is 0).
+	((Win1 = 1; Win2 = 1; Win3 = 1; Win4 = 1) , Win is 1 ; Win is 0).
 
 % Checks 4 consecutive pieces of the same player in the horizontal (1: win; 0: didnt win)
 checkHorizontal(X, Row, Col, Player, Win):-
@@ -213,11 +213,11 @@ checkHorizontal(X, Row, Col, Player, Win):-
 	checkInsideBoard(X, B, Row, F2),
 	checkInsideBoard(X, C, Row, F3),
 
-	((F1 = 0, F2 = 0, F3 = 0) -> 
+	((F1 = 0, F2 = 0, F3 = 0) , 
 		checkPiece(X, Row, A, P1),
 		checkPiece(X, Row, B, P2),
 		checkPiece(X, Row, C, P3),
-		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+		((P1 = Player, P2 = Player, P3 = Player) , Win is 1; Win is 0)
 	; Win is 0
 	).
 
@@ -231,11 +231,11 @@ checkVertical(X, Row, Col, Player, Win):-
 	checkInsideBoard(X, Col, B, F2),
 	checkInsideBoard(X, Col, C, F3),
 
-	((F1 = 0, F2 = 0, F3 = 0) -> 
+	((F1 = 0, F2 = 0, F3 = 0) , 
 		checkPiece(X, A, Col, P1),
 		checkPiece(X, B, Col, P2),
 		checkPiece(X, C, Col, P3),
-		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+		((P1 = Player, P2 = Player, P3 = Player) , Win is 1; Win is 0)
 	; Win is 0
 	).
 
@@ -254,11 +254,11 @@ checkDiagonal1(X, Row, Col, Player, Win):-
 	checkInsideBoard(X, R2, C2, F2),
 	checkInsideBoard(X, R3, C3, F3),
 
-	((F1 = 0, F2 = 0, F3 = 0) -> 
+	((F1 = 0, F2 = 0, F3 = 0) , 
 		checkPiece(X, R1, C1, P1),
 		checkPiece(X, R2, C2, P2),
 		checkPiece(X, R3, C3, P3),
-		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+		((P1 = Player, P2 = Player, P3 = Player) , Win is 1; Win is 0)
 	; Win is 0
 	).
 
@@ -277,11 +277,11 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	checkInsideBoard(X, R2, C2, F2),
 	checkInsideBoard(X, R3, C3, F3),
 
-	((F1 = 0, F2 = 0, F3 = 0) -> 
+	((F1 = 0, F2 = 0, F3 = 0) , 
 		checkPiece(X, R1, C1, P1),
 		checkPiece(X, R2, C2, P2),
 		checkPiece(X, R3, C3, P3),
-		((P1 = Player, P2 = Player, P3 = Player) -> Win is 1; Win is 0)
+		((P1 = Player, P2 = Player, P3 = Player) , Win is 1; Win is 0)
 	; Win is 0
 	).
 
@@ -292,17 +292,17 @@ checkIfPossible(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Lose):-
 checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
 	checkPiece(X, Row, Col, Flag),
 	Col1 is Col+1,
-	(Flag =:= Player -> 
+	(Flag =:= Player , 
 		checkNumber(X, Row, Col, Num),
-		(Num \= 1 -> 
+		(Num \= 1 , 
 			Lose is 0; 
-			(Col =:= MaxCol -> 
+			(Col =:= MaxCol , 
 				Row1 is Row +1, 
 				checkIfPossible(X, Player, MaxRow, MaxCol, Row1, 0, Lose); 
 				checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col1, Lose)
 			)
 		);
-		(Col = MaxCol -> 
+		(Col = MaxCol , 
 			Row1 is Row + 1, 
 			checkIfPossible(X, Player, MaxRow, MaxCol, Row1, 0, Lose);
 			checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col1, Lose)
@@ -319,13 +319,13 @@ mainRecursivePLPL(Board, Counter, _, _) :-
 	write('\33\[2J'),
 	display_game(Board),
 	Player is Counter mod 2,
-	(Player \= 0 -> turn(1), nl ; turn(0), nl ),
+	(Player \= 0 , turn(1), nl ; turn(0), nl ),
  	
 	chooseStack(Board, C1, R1, Player),
 	chooseWhereToMove(Board, C1, R1, C2, R2, Player),
 	chooseNumberPieces(Board, C1, R1, Np, Counter),
 
-	(Player \= 0 -> 
+	(Player \= 0 , 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
 		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
 	), 

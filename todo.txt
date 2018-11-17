@@ -4,7 +4,7 @@ VIP:
 3. recursiva pc vs pc
 
 
+
 MEH:
-1. tirar if's (display, logic, pc, utilities)
 2. alterar nomes das funções pedidas
 4. pôr as rows a serem recebidas como letras e não numeros

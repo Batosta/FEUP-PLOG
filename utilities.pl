@@ -88,8 +88,8 @@ checkInsideBoard([H|T], IndC, IndR, Flag) :-
 	arrayLength([H|T], Row),
 	C is Col - 1,
 	R is Row - 1,
-	((IndC @> C ; IndR @> R) -> Flag is 1;
-		((IndC @< 0 ; IndR @< 0) -> Flag is 1;
+	((IndC @> C ; IndR @> R) , Flag is 1;
+		((IndC @< 0 ; IndR @< 0) , Flag is 1;
 		Flag is 0)
 	).
 
