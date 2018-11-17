@@ -47,18 +47,32 @@ pcMoveRandom(X, Player, C1, R1, C2, R2, Np) :-
 	chooseRandomPieceNumber(X, Player, ColSize, RowSize, C1, R1, Np),
 	chooseRandomLMove(X, Player, ColSize, RowSize, C1, R1, C2, R2).
 
+
+
+
 %TESTING INTELLIGENT BOT
-pcMove(_,_,0,_,_,_,_,_).
-pcMove(X, Player, Max, From, To):-
-	checkEmpty(X, X, 0, 0, Max, [], Jog),
-	(Player =:= 1 , 
-		getBlacks(X, 0, 0, [], Coords);
-		getWhites(X, 0, 0, [], Coords)
-	),
+pcMove(_, _, -1, _, _).
+pcMove(X, 0, Max, From, To):-
+
+	checkEmpty(X, X, 0, 0, Max, [], Jog, 0),
+	getWhites(X, 0, 0, [], Coords),
+
 	botCoordinates(X, Jog, Coords, Coords, Piece, Tile),
 	((Piece = [], Tile = []) , 
 		Max1 is Max-1, 
-		pcMove(X, Player, Max1, From, To); 
+		pcMove(X, 0, Max1, From, To); 
+		From = Piece, 
+		To = Tile
+	).
+pcMove(X, 1, Max, From, To):-
+
+	checkEmpty(X, X, 0, 0, Max, [], Jog, 1),		%jog = array com as emptys
+	getBlacks(X, 0, 0, [], Coords),					%coords = array com as pretas neste caso
+
+	botCoordinates(X, Jog, Coords, Coords, Piece, Tile),
+	((Piece = [], Tile = []) , 
+		Max1 is Max-1, 
+		pcMove(X, 1, Max1, From, To); 
 		From = Piece, 
 		To = Tile
 	).
@@ -297,10 +311,13 @@ getWhitesAux([], _, _, Aux, Coords):-
 	append([], Coords, Aux).
 getWhitesAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
 	Col1 is Col+1,
-	((H = white, H1 @> 1) , append(Coords, [[Row, Col]], Coords1), getWhitesAux(T, Row, Col1, Aux, Coords1) ; getWhitesAux(T, Row, Col1, Aux, Coords)).
+	((H = white, H1 @> 1) , 
+		append(Coords, [[Row, Col]], Coords1), 
+		getWhitesAux(T, Row, Col1, Aux, Coords1); 
+		getWhitesAux(T, Row, Col1, Aux, Coords)).
 
-
-%getBlacks(X, 0, 0, [], Coords). Retorna Coords, com as coordenadas das posiçoes de peças pretas
+%BLACKS
+%getBlacks(X, 0, 0, [], Coords). Retorna Coords, com as coordenadas das posiçoes de peças brancas
 getBlacks([], _, _, Temp, Coords):-
 	append([], Temp, Coords).
 getBlacks([H|T], Row, Col, Temp, Coords):-
@@ -309,42 +326,52 @@ getBlacks([H|T], Row, Col, Temp, Coords):-
 	append(Temp, Aux, Coords1),
 	getBlacks(T, Row1, 0, Coords1, Coords).
 
-%SE ACONTECER BANHADA FOI POR (H = WHITE, T1 \= 1)
 getBlacksAux([], _, _, Aux, Coords):-
 	append([], Coords, Aux).
 getBlacksAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
 	Col1 is Col+1,
-	((H = black, H1 @> 1) , append(Coords, [[Row, Col]], Coords1), getBlacksAux(T, Row, Col1, Aux, Coords1) ; getBlacksAux(T, Row, Col1, Aux, Coords)).
+	((H = black, H1 @> 1) , 
+		append(Coords, [[Row, Col]], Coords1), 
+		getBlacksAux(T, Row, Col1, Aux, Coords1); 
+		getBlacksAux(T, Row, Col1, Aux, Coords)).
+
+
+
+
 
 %percorre o tabuleiro e encontra empties que tenham nas redondezas Max peças. Ou seja, posições ótimas para se jogar. RETORNA JOG
-checkEmpty([], _, _, _, _, Aux, Jog):-
+checkEmpty([], _, _, _, _, Aux, Jog, _):-
 	append([], Aux, Jog).
-checkEmpty([H|T], X, Row, Col, Max, Temp, Jog):-
+checkEmpty([H|T], X, Row, Col, Max, Temp, Jog, Player):-
 	Row1 is Row+1,
-	checkEmptyAux(H, X, Row, Col, Max, Aux, []),
+	checkEmptyAux(H, X, Row, Col, Max, Aux, [], Player),
 	append(Temp, Aux, Jog1),
-	checkEmpty(T, X, Row1, 0, Max, Jog1, Jog).
+	checkEmpty(T, X, Row1, 0, Max, Jog1, Jog, Player).
 
 %Escreve no Aux, as posições empty que encontra na linha que tenham Max peças ao seu lado.
-checkEmptyAux([], _, _, _, _, Aux, Empties):-
+checkEmptyAux([], _, _, _, _, Aux, Empties, _):-
 	append([], Empties, Aux).
-checkEmptyAux([[H|_]|T], X, Row, Col, Max, Aux, Empties):-
+checkEmptyAux([[H|_]|T], X, Row, Col, Max, Aux, Empties, Player):-
 	Col1 is Col+1,
 	(H = empty ,
-		checkAll(X, 0, Col, Row, Max, F1),
+		checkAll(X, Player, Col, Row, Max, F1),
 			(F1 = 0 , 
 				append(Empties, [[Row, Col]], Empties1), 
-				checkEmptyAux(T, X, Row, Col1, Max, Aux, Empties1) 
+				checkEmptyAux(T, X, Row, Col1, Max, Aux, Empties1, Player) 
 				; 
-				checkEmptyAux(T, X, Row, Col1, Max, Aux, Empties)
+				checkEmptyAux(T, X, Row, Col1, Max, Aux, Empties, Player)
 			)
 		;
-		checkEmptyAux(T, X, Row, Col1, Max, Aux, Empties)
+		checkEmptyAux(T, X, Row, Col1, Max, Aux, Empties, Player)
 	).
+
+
+
+
+
 
 %Função que recebe as posições White e as empty com Max peças à volta. Se uma White fizer L com alguma empty, retorna essa posição imediatamente. Algoritmo ganancioso.
 %argumentos: Tabuleiro atual, Lista com empties com Max peças a volta, Lista com todos os Whites, Jogada R a fazer, Jogada C a fazer
-
 botCoordinates(_, [], _, _, Piece, Tile):-
 	Tile = [],
 	Piece = [].
@@ -359,8 +386,9 @@ botCoordinates(X, [H1|T1], [H2|T2], Y, Piece, Tile):-
 		botCoordinates(X, [H1|T1], T2, Y, Piece, Tile)
 	).
 botCoordinatesAux(X, [H|T], [H1|T1], Flag):-
-	checkLPlay(X, H1, T1, H, T, F),
-	(F = 1 , Flag is 1 ; Flag is 0).
+	checkLPlay(X, H, T, H1, T1, F),
+	checkAdjacents(X, H, T, F1),
+	((F = 1, F1 = 1) , Flag is 1 ; Flag is 0).
 
 
 % (1: black; 0: white)
@@ -369,6 +397,7 @@ mainRecursivePLPC(_, _, _, 1, _):-
 mainRecursivePLPC(_, _, _, _, 1):-
 	noPiecesMessage.
 mainRecursivePLPC(Level, Board, Counter, _, _) :-
+	
 	write('\33\[2J'),
 	display_game(Board),
 	Player is Counter mod 2,
@@ -413,21 +442,29 @@ mainRecursivePCPC(_, _, _, 1):-
 	noPiecesMessage.
 mainRecursivePCPC(Board, Counter, _, _) :-
 
+	write('\33\[2J'),
 	display_game(Board),
 	Player is Counter mod 2,
 
 	turn(Player), nl,
 	pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
-	write('a'),
-	C1 = H1, R1 = H, C2 = H3, R2 = H2,
-	%dar improve ao numero para escolher
-	checkNumber(Board, R1, C1, MaxN),
-	random(1, MaxN, Np),
+	C1 is H1,
+	R1 is H,
+	C2 is H3,
+	R2 is H2,
 
-	(Player \= 0 , 
+	(Counter =:= 1,
+		Np is 1;
+		checkNumber(Board, R1, C1, MaxN),
+		random(1, MaxN, Np)
+	),
+
+	(Player \= 0, 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
 		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
 	), 
+
+	sleep(5),
 
 	checkLengths(Board1, MaxRow, MaxCol),
 	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),

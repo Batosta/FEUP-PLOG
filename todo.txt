@@ -1,7 +1,6 @@
 VIP:
 1. acabar relatorio (10/15 paginas)
 2. comentar codigo
-3. recursiva pc vs pc
 
 
 
