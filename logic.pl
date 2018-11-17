@@ -161,38 +161,20 @@ checkNPConditions([H|T], Col, Row, Number, Flag, Counter) :-
 		)
 	).
 
+move(Board, Player, C1, R1, C2, R2, Np, Board1) :-
+	(Player \= 0, 
+		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
+		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
+	).
 makeMoveB([H|T], C1, R1, C2, R2, NP, Z):-
 	updatePiece([H|T], [], R1, C1, NP, black, Z1),
 	movePiece(Z1, [], R2, C2, NP, black, Z2),
 	boardResize(Z2, C2, R2, Z).
-
 makeMoveW([H|T], C1, R1, C2, R2, NP, Z):-
 	updatePiece([H|T], [], R1, C1, NP, white, Z1),
 	movePiece(Z1, [], R2, C2, NP, white, Z2),
 	boardResize(Z2, C2, R2, Z).
 
-% Checks the whole win condition
-checkWin(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
-	Win is 0.
-checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
-	checkPiece(X, Row, Col, Flag),
-	Col1 is Col+1,
-	(Flag =:= Player , 
-		check(X, Row, Col, Player, W1),
-		(W1 =:= 1 , 
-			Win is 1; 
-			(Col =:= MaxCol , 
-				Row1 is Row +1, 
-				checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win); 
-				checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
-			)
-		);
-		(Col = MaxCol , 
-			Row1 is Row + 1, 
-			checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win);
-			checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
-		)
-	).
 
 % Checks 4 consecutive pieces of the same player in any direction (1: win; 0: didnt win)
 check(X, Row, Col, Player, Win):-
@@ -286,7 +268,34 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	).
 
 
-% % Checks whether a player still has pieces to move (1: No more pieces; 0: Still has pieces)
+game_over(X, Player, MaxRow, MaxCol, Win, Lose) :-
+	checkWin(X, Player, MaxRow, MaxCol, 0, 0, Win),
+	checkIfPossible(X, Player, MaxRow, MaxCol, 0, 0, Lose).
+
+% Checks the whole win condition
+checkWin(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
+	Win is 0.
+checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
+	checkPiece(X, Row, Col, Flag),
+	Col1 is Col+1,
+	(Flag =:= Player , 
+		check(X, Row, Col, Player, W1),
+		(W1 =:= 1 , 
+			Win is 1; 
+			(Col =:= MaxCol , 
+				Row1 is Row +1, 
+				checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win); 
+				checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
+			)
+		);
+		(Col = MaxCol , 
+			Row1 is Row + 1, 
+			checkWin(X, Player, MaxRow, MaxCol, Row1, 0, Win);
+			checkWin(X, Player, MaxRow, MaxCol, Row, Col1, Win)
+		)
+	).
+
+% Checks whether a player still has pieces to move (1: No more pieces; 0: Still has pieces)
 checkIfPossible(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Lose):-
 	Lose is 1.
 checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
@@ -325,14 +334,10 @@ mainRecursivePLPL(Board, Counter, _, _) :-
 	chooseWhereToMove(Board, C1, R1, C2, R2, Player),
 	chooseNumberPieces(Board, C1, R1, Np, Counter),
 
-	(Player \= 0 , 
-		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
-		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
-	), 
+	move(Board, Player, C1, R1, C2, R2, Np, Board1),
 
 	checkLengths(Board1, MaxRow, MaxCol),
-	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
-	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
+	game_over(Board1, Player, MaxRow, MaxCol, WinAux, LoseAux),
 
 	display_game(Board1),
 

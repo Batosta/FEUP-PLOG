@@ -1,9 +1,6 @@
 VIP:
 1. acabar relatorio (10/15 paginas)
-2. comentar codigo
-
-
+2. comentar codigo (pc, utilities, display, logic)
 
 MEH:
 2. alterar nomes das funções pedidas
-4. pôr as rows a serem recebidas como letras e não numeros

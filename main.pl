@@ -7,5 +7,6 @@
 :-consult('utilities.pl').
 :-consult('pc.pl').
 
+% Corresponds to the main function
 play :-
 	firstMenu.

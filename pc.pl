@@ -294,8 +294,7 @@ checkAll(X, Player, Col, Row, Max, Flag):-
 		checkNumberVertical(X, Player, Col, Row, N2),
 		checkNumberDiagonal1(X, Player, Col, Row, N3),
 		checkNumberDiagonal2(X, Player, Col, Row, N4),
-		((N1 = Max ; N2 = Max; N3 = Max; N4 = Max) , Flag is 0; Flag is 1).
-
+		((N1 = Max ; N2 = Max; N3 = Max; N4 = Max), Flag is 0; Flag is 1).
 
 %getWhites(X, 0, 0, [], Coords). Retorna Coords, com as coordenadas das posiçoes de peças brancas
 getWhites([], _, _, Temp, Coords):-
@@ -391,6 +390,24 @@ botCoordinatesAux(X, [H|T], [H1|T1], Flag):-
 	((F = 1, F1 = 1) , Flag is 1 ; Flag is 0).
 
 
+
+choose_move(Board, Player, Level, C1, R1, C2, R2, Np, Counter) :-
+	(Level =:= 1,
+		pcMoveRandom(Board, Player, C1, R1, C2, R2, Np);
+
+		pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
+		C1 = H1, 
+		R1 = H, 
+		C2 = H3, 
+		R2 = H2,
+		(Counter =:= 1,
+			Np is 1;
+			checkNumber(Board, R1, C1, MaxN),
+			random(1, MaxN, Np)
+		)
+	).
+
+
 % (1: black; 0: white)
 mainRecursivePLPC(_, _, _, 1, _):-
 	winningMessage.
@@ -409,25 +426,13 @@ mainRecursivePLPC(Level, Board, Counter, _, _) :-
 		chooseNumberPieces(Board, C1, R1, Np, Counter);
 
 		turn(0), nl,
-		(Level =:= 1 ,
-			pcMoveRandom(Board, Player, C1, R1, C2, R2, Np);
-
-			pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
-			C1 = H1, R1 = H, C2 = H3, R2 = H2,
-			%dar improve ao numero para escolher
-			checkNumber(Board, R1, C1, MaxN),
-			random(1, MaxN, Np)
-		)
+		choose_move(Board, Player, Level, C1, R1, C2, R2, Np, Counter)
 	),
 
-	(Player \= 0 , 
-		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
-		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
-	), 
+	move(Board, Player, C1, R1, C2, R2, Np, Board1), 
 
 	checkLengths(Board1, MaxRow, MaxCol),
-	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
-	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
+	game_over(Board1, Player, MaxRow, MaxCol, WinAux, LoseAux),
 
 	display_game(Board1),
 
@@ -447,28 +452,13 @@ mainRecursivePCPC(Board, Counter, _, _) :-
 	Player is Counter mod 2,
 
 	turn(Player), nl,
-	pcMove(Board, Player, 3, [H|[H1|[]]], [H2|[H3|[]]]),
-	C1 is H1,
-	R1 is H,
-	C2 is H3,
-	R2 is H2,
-
-	(Counter =:= 1,
-		Np is 1;
-		checkNumber(Board, R1, C1, MaxN),
-		random(1, MaxN, Np)
-	),
-
-	(Player \= 0, 
-		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
-		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
-	), 
+	choose_move(Board, Player, 2, C1, R1, C2, R2, Np, Counter),
+	move(Board, Player, C1, R1, C2, R2, Np, Board1),
 
 	sleep(5),
 
 	checkLengths(Board1, MaxRow, MaxCol),
-	checkWin(Board1, Player, MaxRow, MaxCol, 0, 0, WinAux),
-	checkIfPossible(Board1, Player, MaxRow, MaxCol, 0, 0, LoseAux),
+	game_over(Board1, Player, MaxRow, MaxCol, WinAux, LoseAux),
 
 	display_game(Board1),
 
