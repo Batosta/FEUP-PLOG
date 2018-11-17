@@ -1,9 +1,10 @@
+% Player vs Player
 playPLPL :-
 	initialBoard(X),
 	mainRecursivePLPL(X, 1, 0, 0).
 
 
-% Checks the board needs to be resized
+% Checks whether the board needs to be resized
 boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	arrayLength(H, Columns), 
 	arrayLength([H|T], Rows),
@@ -17,7 +18,7 @@ boardResize([H|T], IndC, IndR, [H4|T4]) :-
 		append([], [H|T], [H4|T4])).
 
 
-% Updates the pieces that were played too
+% Updates the tile from where the pieces were played
 updatePiece([H|T], New, 0, IndCol, Number, Player, Final):-
 	updatePieceAux(H, IndCol, Number, Z),
 	replace(H, IndCol, [Player,Z], R),
@@ -27,7 +28,6 @@ updatePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
 	IndRow1 is IndRow - 1,
 	append(New, [H], NewT),
 	updatePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
-
 updatePieceAux([[_|T1]|_], 0, Number, Z):-
 	Z is T1 - Number.
 updatePieceAux([_|T], IndCol, Number, Z):-
@@ -35,8 +35,7 @@ updatePieceAux([_|T], IndCol, Number, Z):-
 	updatePieceAux(T, IndCol1, Number, Z).
 
 
-
-% Updates the tile to where the piece was played
+% Updates the tile to where the pieces were played
 movePiece([H|T], New, 0, IndCol, Number, Player, Final):-
 	replace(H, IndCol, [Player,Number], R),
 	append([R], T, Q),
@@ -45,6 +44,7 @@ movePiece([H|T], New, IndRow, IndCol, Number, Player, Final):-
 	IndRow1 is IndRow-1,
 	append(New, [H], NewT),
 	movePiece(T, NewT, IndRow1, IndCol, Number, Player, Final).
+
 
 % Checks the adjacent tiles to a tile (1: there are adjacent pieces; 0: there are not)
 checkAdjacents([H|T], IndR, IndC, Flag) :-
@@ -79,7 +79,8 @@ checkAdjacents([H|T], IndR, IndC, Flag) :-
 		)
 	).
 
-% Checks the play to check its L (1: it is an L move; 0: it is not)
+
+% Checks the L moves (1: it is an L move; 0: it is not)
 checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 	A is C1 - 2,
 	B is C1 - 1,
@@ -114,6 +115,7 @@ checkLPlay([H|T], C1, R1, C2, R2, Flag) :-
 		)
 	).
 
+
 % Checks all the conditions to see whether a piece is valid to be played (1: with errors; 0: can proceed)
 checkStackConditions([H|T], Col, Row, Player, Flag) :-
 	checkInsideBoard([H|T], Col, Row, F1),
@@ -126,6 +128,7 @@ checkStackConditions([H|T], Col, Row, Player, Flag) :-
 			)
 		)
 	).
+
 
 % Checks all the conditions to see whether a tile is valid to be played to (1: with errors; 0: can proceed)
 checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
@@ -142,6 +145,7 @@ checkTileConditions([H|T], C1, R1, C2, R2, Flag) :-
 			)
 		)
 	).
+
 
 % Checks whether the number of pieces to be moved is valid (1: invalid number; 0: valid)
 checkNPConditions([H|T], Col, Row, Number, Flag, Counter) :-
@@ -161,15 +165,21 @@ checkNPConditions([H|T], Col, Row, Number, Flag, Counter) :-
 		)
 	).
 
+
+% Executes a play/move in a board Board, returning the result in another board Board1
 move(Board, Player, C1, R1, C2, R2, Np, Board1) :-
 	(Player \= 0, 
 		makeMoveB(Board, C1, R1, C2, R2, Np, Board1); 
 		makeMoveW(Board, C1, R1, C2, R2, Np, Board1)
 	).
+
+
+% Moves a black piece
 makeMoveB([H|T], C1, R1, C2, R2, NP, Z):-
 	updatePiece([H|T], [], R1, C1, NP, black, Z1),
 	movePiece(Z1, [], R2, C2, NP, black, Z2),
 	boardResize(Z2, C2, R2, Z).
+% Moves a white piece
 makeMoveW([H|T], C1, R1, C2, R2, NP, Z):-
 	updatePiece([H|T], [], R1, C1, NP, white, Z1),
 	movePiece(Z1, [], R2, C2, NP, white, Z2),
@@ -268,11 +278,13 @@ checkDiagonal2(X, Row, Col, Player, Win):-
 	).
 
 
+% Checks whether a player Player has either won/lost the game
 game_over(X, Player, MaxRow, MaxCol, Win, Lose) :-
 	checkWin(X, Player, MaxRow, MaxCol, 0, 0, Win),
 	checkIfPossible(X, Player, MaxRow, MaxCol, 0, 0, Lose).
 
-% Checks the whole win condition
+
+% Checks whether a player already has 4 consecutive pieces (1: Won; 0: Not yet)
 checkWin(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
 	Win is 0.
 checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
@@ -295,7 +307,7 @@ checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
 		)
 	).
 
-% Checks whether a player still has pieces to move (1: No more pieces; 0: Still has pieces)
+% Checks whether a player still has pieces to move (1: No more pieces/Lost; 0: Still has pieces)
 checkIfPossible(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Lose):-
 	Lose is 1.
 checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
@@ -319,7 +331,7 @@ checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
 	).
 
 
-% (1: black; 0: white)
+% Recursive function that takes care of the Player vs Player type of game
 mainRecursivePLPL(_, _, 1, _):-
 	winningMessage.
 mainRecursivePLPL(_, _, _, 1):-

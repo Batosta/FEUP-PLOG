@@ -1,12 +1,17 @@
+% Player vs Computer
 playPLPC(Level) :-
 	initialBoard(X),
 	mainRecursivePLPC(Level, X, 1, 0, 0).
 
+% Computer vs Computer
 playPCPC :-
 	initialBoard(X),
 	mainRecursivePCPC(X, 1, 0, 0).
 
-% Chooses a random stack to be played from the Player. Also chooses a random number of pieces.
+
+%---------------------------- Functions that relate to the random bot ---------------------------------------------
+
+% Chooses a random stack to be played. The stack will belong to the player Player. Also chooses a random number of pieces.
 chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
 	random(0, ColSize, C1),
 	random(0, RowSize, R1),
@@ -21,6 +26,7 @@ chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
 			Row is R1
 		)
 	).
+
 
 % Chooses a random move in the L shape, starting in a certain stack
 chooseRandomLMove(X, Player, ColSize, RowSize, PieceC, PieceR, TileC, TileR) :-
@@ -41,6 +47,7 @@ chooseRandomLMove(X, Player, ColSize, RowSize, PieceC, PieceR, TileC, TileR) :-
 		)
 	).
 
+
 % Returns the position of the stack + number of pieces to be played + position to where they will be played
 pcMoveRandom(X, Player, C1, R1, C2, R2, Np) :-
 	checkLengths(X, RowSize, ColSize),
@@ -50,7 +57,11 @@ pcMoveRandom(X, Player, C1, R1, C2, R2, Np) :-
 
 
 
-%TESTING INTELLIGENT BOT
+
+
+%---------------------------- Functions that relate to the smart bot ---------------------------------------------
+
+% Function that will take care of choosing the positions of the tiles from where + to where the smart bot will play
 pcMove(_, _, -1, _, _).
 pcMove(X, 0, Max, From, To):-
 
@@ -66,8 +77,8 @@ pcMove(X, 0, Max, From, To):-
 	).
 pcMove(X, 1, Max, From, To):-
 
-	checkEmpty(X, X, 0, 0, Max, [], Jog, 1),		%jog = array com as emptys
-	getBlacks(X, 0, 0, [], Coords),					%coords = array com as pretas neste caso
+	checkEmpty(X, X, 0, 0, Max, [], Jog, 1),
+	getBlacks(X, 0, 0, [], Coords),
 
 	botCoordinates(X, Jog, Coords, Coords, Piece, Tile),
 	((Piece = [], Tile = []) , 
@@ -76,7 +87,6 @@ pcMove(X, 1, Max, From, To):-
 		From = Piece, 
 		To = Tile
 	).
-
 
 
 % Checks the number of the Player pieces in the horizontal, checking right side
@@ -286,17 +296,20 @@ checkNumberDiagonal2(X, Player, Col, Row, Number) :-
 		Number is NumbAux
 	).
 
-%-------------------------------------------------BOT INTELIGENTE--------------------------------------------------
 
-
+% Checks the number of the Player pieces in any direction, checking both sides (0: Success in function of the Max value; 1: Insuccess)
 checkAll(X, Player, Col, Row, Max, Flag):-
 		checkNumberHorizontal(X, Player, Col, Row, N1),
 		checkNumberVertical(X, Player, Col, Row, N2),
 		checkNumberDiagonal1(X, Player, Col, Row, N3),
 		checkNumberDiagonal2(X, Player, Col, Row, N4),
-		((N1 = Max ; N2 = Max; N3 = Max; N4 = Max), Flag is 0; Flag is 1).
+		((N1 = Max ; N2 = Max; N3 = Max; N4 = Max), 
+			Flag is 0;
+			Flag is 1
+		).
 
-%getWhites(X, 0, 0, [], Coords). Retorna Coords, com as coordenadas das posiçoes de peças brancas
+
+% Returns an array with the coordinates of all the white pieces
 getWhites([], _, _, Temp, Coords):-
 	append([], Temp, Coords).
 getWhites([H|T], Row, Col, Temp, Coords):-
@@ -304,8 +317,6 @@ getWhites([H|T], Row, Col, Temp, Coords):-
 	Row1 is Row+1,
 	append(Temp, Aux, Coords1),
 	getWhites(T, Row1, 0, Coords1, Coords).
-
-%SE ACONTECER BANHADA FOI POR (H = WHITE, T1 \= 1)
 getWhitesAux([], _, _, Aux, Coords):-
 	append([], Coords, Aux).
 getWhitesAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
@@ -315,8 +326,7 @@ getWhitesAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
 		getWhitesAux(T, Row, Col1, Aux, Coords1); 
 		getWhitesAux(T, Row, Col1, Aux, Coords)).
 
-%BLACKS
-%getBlacks(X, 0, 0, [], Coords). Retorna Coords, com as coordenadas das posiçoes de peças brancas
+% Returns an array with the coordinates of all the black pieces
 getBlacks([], _, _, Temp, Coords):-
 	append([], Temp, Coords).
 getBlacks([H|T], Row, Col, Temp, Coords):-
@@ -324,7 +334,6 @@ getBlacks([H|T], Row, Col, Temp, Coords):-
 	Row1 is Row+1,
 	append(Temp, Aux, Coords1),
 	getBlacks(T, Row1, 0, Coords1, Coords).
-
 getBlacksAux([], _, _, Aux, Coords):-
 	append([], Coords, Aux).
 getBlacksAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
@@ -335,10 +344,8 @@ getBlacksAux([[H|[H1|[]]]|T], Row, Col, Aux, Coords):-
 		getBlacksAux(T, Row, Col1, Aux, Coords)).
 
 
-
-
-
-%percorre o tabuleiro e encontra empties que tenham nas redondezas Max peças. Ou seja, posições ótimas para se jogar. RETORNA JOG
+% Iterates the whole board, trying to find empty pieces that have a Max pieces of the same color in the adjacents tiles.
+% Returns an array with all the empty pieces, in function of the Max.
 checkEmpty([], _, _, _, _, Aux, Jog, _):-
 	append([], Aux, Jog).
 checkEmpty([H|T], X, Row, Col, Max, Temp, Jog, Player):-
@@ -346,8 +353,6 @@ checkEmpty([H|T], X, Row, Col, Max, Temp, Jog, Player):-
 	checkEmptyAux(H, X, Row, Col, Max, Aux, [], Player),
 	append(Temp, Aux, Jog1),
 	checkEmpty(T, X, Row1, 0, Max, Jog1, Jog, Player).
-
-%Escreve no Aux, as posições empty que encontra na linha que tenham Max peças ao seu lado.
 checkEmptyAux([], _, _, _, _, Aux, Empties, _):-
 	append([], Empties, Aux).
 checkEmptyAux([[H|_]|T], X, Row, Col, Max, Aux, Empties, Player):-
@@ -365,12 +370,10 @@ checkEmptyAux([[H|_]|T], X, Row, Col, Max, Aux, Empties, Player):-
 	).
 
 
-
-
-
-
-%Função que recebe as posições White e as empty com Max peças à volta. Se uma White fizer L com alguma empty, retorna essa posição imediatamente. Algoritmo ganancioso.
-%argumentos: Tabuleiro atual, Lista com empties com Max peças a volta, Lista com todos os Whites, Jogada R a fazer, Jogada C a fazer
+% Receiving an array with the coordinates of all the pieces with the same color, iterates that array.
+% Also receives an array with the coordinates of all the empty tiles with Max pieces in the adjacent tiles.
+% In every piece, we check whether there is an L move from it to an empty tile of the above.
+% If there is an L move, we move it right away. If not, we keep searching
 botCoordinates(_, [], _, _, Piece, Tile):-
 	Tile = [],
 	Piece = [].
@@ -390,7 +393,7 @@ botCoordinatesAux(X, [H|T], [H1|T1], Flag):-
 	((F = 1, F1 = 1) , Flag is 1 ; Flag is 0).
 
 
-
+% Chooses the play to be made by the computer, taking into account its level of difficulty
 choose_move(Board, Player, Level, C1, R1, C2, R2, Np, Counter) :-
 	(Level =:= 1,
 		pcMoveRandom(Board, Player, C1, R1, C2, R2, Np);
@@ -408,7 +411,7 @@ choose_move(Board, Player, Level, C1, R1, C2, R2, Np, Counter) :-
 	).
 
 
-% (1: black; 0: white)
+% Recursive function that takes care of the Player vs Computer type of game
 mainRecursivePLPC(_, _, _, 1, _):-
 	winningMessage.
 mainRecursivePLPC(_, _, _, _, 1):-
@@ -439,8 +442,7 @@ mainRecursivePLPC(Level, Board, Counter, _, _) :-
 	Counter1 is Counter + 1,
 	mainRecursivePLPC(Level, Board1, Counter1, WinAux, LoseAux).
 
-
-
+% Recursive function that takes care of the Computer vs Computer type of game
 mainRecursivePCPC(_, _, 1, _):-
 	winningMessage.
 mainRecursivePCPC(_, _, _, 1):-

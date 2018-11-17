@@ -45,7 +45,7 @@ letter(24, S) :- S='X'.
 letter(25, S) :- S='Y'.
 letter(26, S) :- S='Z'.
 
-% Prints any board
+% Prints completely any board
 display_game([H|T]) :-
 
 	arrayLength(H, Columns),
@@ -56,35 +56,26 @@ display_game([H|T]) :-
 	printBoard([H|T], Columns, 0, 1), nl, nl.
 
 
-
-% Head - [[empty, 0], [empty, 0], [empty, 0], [empty, 0]]
-% Prints the pieces & its number
-% ([Head|Tail], Columns, Rows, N)
-
+% Prints the pieces plus its number (Head is a full row)
 printBoard([], _, _, _).
 printBoard([H|T], C, R, N) :-
 	nl,
 	N1 is N + 1,
 	R1 is R + 1,
 	letter(R1, S),
-	write('|  '), write(S), write('  |  '), printLine(H), nl, 
+	write('|  '), write(S), write('  |  '), printRow(H), nl, 
 	write('|'), separation(C), write('|'),
 	printBoard(T, C, R1, N1).
 
 
-
-% [empty, 0]
-% Prints a full line
-
-printLine([]).
-printLine([H|T]) :-
+% Prints a full row (Head is a pair of atoms)
+printRow([]).
+printRow([H|T]) :-
 	printPair(H),
-	printLine(T).
+	printRow(T).
 
 
-
-% empty
-% Prints a pair
+% Prints a pair (Head is the color of the tile)
 printPair([empty|_]) :-
 	write('    | ').
 printPair([H|T]) :-
@@ -93,9 +84,7 @@ printPair([H|T]) :-
 	printNumber(T).
 
 
-
-% 0
-% Prints the number in a pair
+% Prints the number in a pair (Head is the number)
 printNumber([]).
 printNumber([H|_]) :-
 	(H > 9 ,
@@ -103,7 +92,7 @@ printNumber([H|_]) :-
 		write(','), write(H), write(' | ')).
 
 
-% Top of the table
+% Prints the top of the table (column references)
 tableTop(C, C).
 tableTop(C, X) :-
 	write(X), write('  |  '),
@@ -111,8 +100,7 @@ tableTop(C, X) :-
 	tableTop(C, X1).
 
 
-
-% Separation between 2 lines
+% Prints the separation between 2 rows
 separation(-1).
 separation(C) :-
 	write('------'),
