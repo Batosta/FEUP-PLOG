@@ -1,5 +1,2 @@
 VIP:
 1. acabar relatorio (10/15 paginas)
-
-MEH:
-2. alterar nomes das funções pedidas
