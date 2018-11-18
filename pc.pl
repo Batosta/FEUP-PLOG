@@ -299,14 +299,14 @@ checkNumberDiagonal2(X, Player, Col, Row, Number) :-
 
 % Checks the number of the Player pieces in any direction, checking both sides (0: Success in function of the Max value; 1: Insuccess)
 checkAll(X, Player, Col, Row, Max, Flag):-
-		checkNumberHorizontal(X, Player, Col, Row, N1),
-		checkNumberVertical(X, Player, Col, Row, N2),
-		checkNumberDiagonal1(X, Player, Col, Row, N3),
-		checkNumberDiagonal2(X, Player, Col, Row, N4),
-		((N1 = Max ; N2 = Max; N3 = Max; N4 = Max), 
-			Flag is 0;
-			Flag is 1
-		).
+	checkNumberHorizontal(X, Player, Col, Row, N1),
+	checkNumberVertical(X, Player, Col, Row, N2),
+	checkNumberDiagonal1(X, Player, Col, Row, N3),
+	checkNumberDiagonal2(X, Player, Col, Row, N4),
+	((N1 = Max ; N2 = Max; N3 = Max; N4 = Max), 
+		Flag is 0;
+		Flag is 1
+	).
 
 
 % Returns an array with the coordinates of all the white pieces
