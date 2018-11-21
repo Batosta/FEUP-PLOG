@@ -29,6 +29,7 @@ chooseRandomPieceNumber(X, Player, ColSize, RowSize, Col, Row, Number) :-
 
 
 % Chooses a random move in the L shape, starting in a certain stack
+
 chooseRandomLMove(X, Player, ColSize, RowSize, PieceC, PieceR, TileC, TileR) :-
 	random(0, ColSize, C2),
 	random(0, RowSize, R2),
@@ -49,6 +50,7 @@ chooseRandomLMove(X, Player, ColSize, RowSize, PieceC, PieceR, TileC, TileR) :-
 
 
 % Returns the position of the stack + number of pieces to be played + position to where they will be played
+
 pcMoveRandom(X, Player, C1, R1, C2, R2, Np) :-
 	checkLengths(X, RowSize, ColSize),
 	chooseRandomPieceNumber(X, Player, ColSize, RowSize, C1, R1, Np),

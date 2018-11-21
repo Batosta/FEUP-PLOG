@@ -45,7 +45,8 @@ letter(24, S) :- S='X'.
 letter(25, S) :- S='Y'.
 letter(26, S) :- S='Z'.
 
-% Prints completely any board
+% Prints any board
+
 display_game([H|T]) :-
 
 	arrayLength(H, Columns),

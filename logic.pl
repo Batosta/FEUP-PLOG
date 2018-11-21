@@ -4,7 +4,8 @@ playPLPL :-
 	mainRecursivePLPL(X, 1, 0, 0).
 
 
-% Checks whether the board needs to be resized
+% Checks the board needs to be resized
+
 boardResize([H|T], IndC, IndR, [H4|T4]) :-
 	arrayLength(H, Columns), 
 	arrayLength([H|T], Rows),
@@ -18,7 +19,8 @@ boardResize([H|T], IndC, IndR, [H4|T4]) :-
 		append([], [H|T], [H4|T4])).
 
 
-% Updates the tile from where the pieces were played
+% Updates the pieces that were played too
+
 updatePiece([H|T], New, 0, IndCol, Number, Player, Final):-
 	updatePieceAux(H, IndCol, Number, Z),
 	replace(H, IndCol, [Player,Z], R),
@@ -35,7 +37,9 @@ updatePieceAux([_|T], IndCol, Number, Z):-
 	updatePieceAux(T, IndCol1, Number, Z).
 
 
-% Updates the tile to where the pieces were played
+
+% Updates the tile to where the piece was played
+
 movePiece([H|T], New, 0, IndCol, Number, Player, Final):-
 	replace(H, IndCol, [Player,Number], R),
 	append([R], T, Q),
@@ -283,8 +287,8 @@ game_over(X, Player, MaxRow, MaxCol, Win, Lose) :-
 	checkWin(X, Player, MaxRow, MaxCol, 0, 0, Win),
 	checkIfPossible(X, Player, MaxRow, MaxCol, 0, 0, Lose).
 
+% Checks the whole win condition
 
-% Checks whether a player already has 4 consecutive pieces (1: Won; 0: Not yet)
 checkWin(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Win):-
 	Win is 0.
 checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
@@ -307,7 +311,8 @@ checkWin(X, Player, MaxRow, MaxCol, Row, Col, Win):-
 		)
 	).
 
-% Checks whether a player still has pieces to move (1: No more pieces/Lost; 0: Still has pieces)
+% Checks whether a player still has pieces to move (1: No more pieces; 0: Still has pieces)
+
 checkIfPossible(_, _, MaxRow, MaxCol, MaxRow, MaxCol, Lose):-
 	Lose is 1.
 checkIfPossible(X, Player, MaxRow, MaxCol, Row, Col, Lose):-
