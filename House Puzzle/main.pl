@@ -1,5 +1,6 @@
-%:-consult('menu.pl').
+:-consult('menu.pl').
+:-consult('display.pl').
 
 % Corresponds to the main function
-play :-
-	write('play').
+play(X) :-
+	menu(X).
