@@ -1,19 +1,11 @@
-% 1 means house, 0 means blank space
-board([
-[1, 0, 1, 1],
-[0, 0, 1, 1],
-[0, 0, 1, 0],
-[1, 0, 0, 1]
-]).
-
-
-printBoard([H|T]) :-
+printBoard([H|T], D1, D2) :-
 	length(H, Col),
 	nl, write('      '),
 	separation1(Col), nl,
-	display_board([H|T], Col, 1),
+	display_board([H|T], Col, 0),
 	write('      '),
-	separation1(Col), nl, nl.
+	separation1(Col), nl, nl,
+	logicMain([H|T], D1, D2).
 
 % Displays the whole puzzle
 display_board([], _, _).

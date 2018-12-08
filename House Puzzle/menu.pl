@@ -1,5 +1,5 @@
 % Shows credits + the board given
-menu(X) :-
+menu(X, D1, D2) :-
 	write('______________________________________________'), nl,
 	write('                                              '), nl,
 	write('                 HOUSE PUZZLE                 '), nl,
@@ -10,4 +10,4 @@ menu(X) :-
 	write('      Joao Miguel Vaz Tello da Gama Amaral    '), nl,
 	write('______________________________________________'), nl, nl,
 	write('Board:'), nl,
-	printBoard(X).
+	printBoard(X, D1, D2).
