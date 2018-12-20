@@ -1,13 +1,43 @@
-logicMain(X, D1, D2) :-
+logicMain(X) :-
 	
-	getHousesCoords(X, 0, HouseCoords, []),
-	getDistancesArray1(HouseCoords, HouseCoords, AllDistances, []), nl, nl,
-	write('HouseCoords: '), write(HouseCoords), nl, nl,
-	write('AllDistances: '), write(AllDistances), nl, nl,
+	getNumberHouses(X, NumberHouses, 0),
+	write('NumberHouses: '), write(NumberHouses), nl, nl,
 
-	findMaxListLists(AllDistances, Max, -1),
-	findMinListLists(AllDistances, Min, 10000),
-	write('Max: '), write(Max), write('       Min: '), write(Min), nl, nl,
+	getHousesCoords(X, 0, XHousesCoords, [], YHousesCoords, []),
+	write('XHousesCoords: '), write(XHousesCoords), nl,
+	write('YHousesCoords: '), write(YHousesCoords), nl, nl,
 
-	domain([D1, D2], Min, Max),
-	all_different([D1, D2]).
+	PairsLength is div(NumberHouses, 2),
+	length(PairsA, PairsLength),
+	length(PairsB, PairsLength),
+	domain(PairsA, 1, NumberHouses),
+	domain(PairsB, 1, NumberHouses),
+
+	append(PairsA, PairsB, AllPairs),
+	all_distinct(AllPairs),
+
+	write('PairsA: '), write(PairsA), nl,
+	write('PairsB: '), write(PairsB), nl,
+
+	solver(XHousesCoords, YHousesCoords, PairsA, PairsB, Distances),
+	nvalue(2, Distances),
+
+	
+	labeling([ffc], AllPairs),
+	write(AllPairs).
+
+	%juntar o PairsA e o PairsB e dar lhe labeling - fim logicMain
+
+
+
+solver(_, _, [], [], []).
+solver(XHousesCoords, YHousesCoords, [HA|TA], [HB|TB], [HL|TL]) :-
+
+	element(HA, XHousesCoords, XA),
+	element(HA, YHousesCoords, YA),
+	element(HB, XHousesCoords, XB),
+	element(HB, YHousesCoords, YB),
+
+	HL #= ((XA - XB)*(XA - XB) + (YA - YB)*(YA - YB)),
+
+	solver(XHousesCoords, YHousesCoords, TA, TB, TL).

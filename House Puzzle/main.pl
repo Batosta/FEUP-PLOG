@@ -1,4 +1,5 @@
 :- use_module(library(clpfd)).
+:- use_module(library(lists)).
 
 :-consult('menu.pl').
 :-consult('display.pl').
@@ -6,5 +7,5 @@
 :-consult('utilities.pl').
 
 % Corresponds to the main function
-play(X, D1, D2) :-
-	menu(X, D1, D2).
+play(X) :-
+	menu(X).

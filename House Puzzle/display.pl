@@ -1,11 +1,11 @@
-printBoard([H|T], D1, D2) :-
+printBoard([H|T]) :-
 	length(H, Col),
 	nl, write('      '),
-	separation1(Col), nl,
+	separation1(Col), !, nl,
 	display_board([H|T], Col, 0),
 	write('      '),
-	separation1(Col), nl, nl,
-	logicMain([H|T], D1, D2).
+	separation1(Col), !, nl, nl,
+	logicMain([H|T]).
 
 % Displays the whole puzzle
 display_board([], _, _).
