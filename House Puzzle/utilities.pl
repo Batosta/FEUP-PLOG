@@ -1,23 +1,3 @@
-% 1 means house, 0 means blank space
-board([
-	[1, 0, 1, 1],
-	[0, 0, 1, 1],
-	[0, 0, 1, 0],
-	[1, 0, 0, 1]
-]).
-
-houseCoords([[0,0],[0,2],[0,3],[1,2],[1,3],[2,2],[3,0],[3,3]]).
-
-board1([
-	[1, 0, 1, 0, 1, 0],
-	[1, 0, 0, 0, 0, 1],
-	[1, 0, 0, 1, 0, 0],
-	[0, 0, 0, 0, 0, 0],
-	[1, 0, 1, 0, 0, 1],
-	[1, 0, 0, 0, 1, 0]
-]).
-
-
 % Returns in Dist the distance between the two points with coordinates (R1, C1)-(R2, C2)
 distancePoints(R1, C1, R2, C2, Dist) :-
 	
@@ -65,3 +45,28 @@ getHousesCoordsAux([H|T], Row, Col, XHouseCoords, XAux, YHouseCoords, YAux) :-
 		getHousesCoordsAux(T, Row, Col1, XHouseCoords, XAux1, YHouseCoords, YAux1);
 		Col1 is Col + 1,
 		getHousesCoordsAux(T, Row, Col1, XHouseCoords, XAux, YHouseCoords, YAux).
+
+
+separatePairs(_, FinalPairsA, FinalPairsA, FinalPairsB, FinalPairsB, PairsLength, PairsLength).
+separatePairs(AllPairs, FinalPairsA, AuxA, FinalPairsB, AuxB, Num, PairsLength) :-
+
+	Num1 is Num + PairsLength,
+	nth0(Num, AllPairs, Elem1),
+	nth0(Num1, AllPairs, Elem2),
+
+	append(AuxA, [Elem1], AuxA1),
+	append(AuxB, [Elem2], AuxB1),
+	NumAux is Num + 1,
+	separatePairs(AllPairs, FinalPairsA, AuxA1, FinalPairsB, AuxB1, NumAux, PairsLength).
+
+
+showResults([], _, _, _).
+showResults([HA|TA], [HB|TB], [HDist|TDist], Number) :-
+	
+	write('Pair '), write(Number), write(': '),
+	write('H'), write(HA), write(' connects to '),
+	write('H'), write(HB), write(' with a distance of '),
+	write(HDist), nl,
+
+	Number1 is Number + 1,
+	showResults(TA, TB, TDist, Number1).

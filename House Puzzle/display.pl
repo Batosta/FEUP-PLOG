@@ -2,7 +2,7 @@ printBoard([H|T]) :-
 	length(H, Col),
 	nl, write('      '),
 	separation1(Col), !, nl,
-	display_board([H|T], Col, 0),
+	display_board([H|T], Col, 1),
 	write('      '),
 	separation1(Col), !, nl, nl,
 	logicMain([H|T]).
